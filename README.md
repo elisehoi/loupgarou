@@ -7,7 +7,12 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).pw
+
+## How to access the website from a remote machine
+1. Run the server on the host machine with `mix phx.server`
+2. Find your IP with `ip -4 addr show wlp0s20f3 | grep -oP '(?<=inet\s)\d+(\.\d+){3}` in a terminal on the host machine
+3. Connect to this ip with the port (:4000) on the remote machine
 
 ## Learn more
 
