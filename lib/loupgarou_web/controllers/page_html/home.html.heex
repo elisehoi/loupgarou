@@ -1,5 +1,11 @@
 <h1><span style="color: #ff0000;">LOUP GAROU (ALMOST) ORIGINAL GAME</span></h1>
 <p>&nbsp;</p>
- <button type="button">New game!</button> 
- <p>&nbsp;</p>
- <button type="button">Join party!</button> 
+<button type="button" onclick="redirectToNewGame()">New game!</button>
+<p>&nbsp;</p>
+<button type="button">Join party!</button>
+
+<script>
+    function redirectToNewGame() {
+        window.location.href = '/waiting-room-master'; 
+    }
+</script>

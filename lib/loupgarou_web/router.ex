@@ -1,6 +1,7 @@
 defmodule LoupgarouWeb.Router do
   use LoupgarouWeb, :router
 
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -19,6 +20,14 @@ defmodule LoupgarouWeb.Router do
 
     get "/", PageController, :home
   end
+
+  #to change page
+  scope "/" , LoupgarouWeb do
+    pipe_through :browser
+
+    get "/waiting-room-master", PageController, :waiting_room_master
+  end
+
 
   # Other scopes may use custom stacks.
   # scope "/api", LoupgarouWeb do

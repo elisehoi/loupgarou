@@ -6,4 +6,8 @@ defmodule LoupgarouWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def waiting_room_master(conn, _params) do
+    render(conn, "waiting_room_master.html")
+  end
 end
