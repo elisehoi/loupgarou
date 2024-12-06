@@ -16,8 +16,8 @@ defmodule LoupgarouWeb.PageController do
     |> binary_part(0, 5)
   end
 
-def game_room(conn, %{"code" => code}) do
-  render(conn, "game_room.html", code: code)
+def waiting_room_master(conn, %{"code" => code}) do
+  render(conn, "waiting_room_master.html", code: code)
 end
 
 
@@ -27,10 +27,14 @@ def create_game_room(conn, _params) do
     redirect(conn, to: "/#{code}")
   end
 
+def join_game_room(conn, %{"code" => code}) do
+    redirect(conn, to: "/#{code}")
+  end
+
 ## Author Marta DL dec 6 10:18AM
-def waiting_room_master(conn, _params) do
-    render(conn, "waiting_room_master.html")
-end
+#def waiting_room_master(conn, _params) do
+#    render(conn, "waiting_room_master.html")
+#end
 
   def waiting_room_player(conn, _params) do
     render(conn, "waiting_room_player.html")

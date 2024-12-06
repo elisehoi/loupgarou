@@ -21,27 +21,15 @@ defmodule LoupgarouWeb.Router do
     get "/", PageController, :home
     ## Author Elise Nov 29 11:59 AM
     # Create game room
-    #post "/create_game_room", PageController, :create_game_room
     get "/create_game_room", PageController, :create_game_room
     get "/:code", PageController, :waiting_room_master # Dynamic route for game rooms
+
+    get "/join_game_room/:code", PageController, :join_game_room
+
 
   end
 
 ## Author Marta DL dec 6 10:18AM
-
-  #to change page
-  scope "/" , LoupgarouWeb do
-    pipe_through :browser
-
-    get "/waiting-room-master", PageController, :waiting_room_master
-  end
-
-    #to change page
-    scope "/" , LoupgarouWeb do
-      pipe_through :browser
-
-      get "/waiting-room-player", PageController, :waiting_room_player
-    end
 
   #to change page
   scope "/" , LoupgarouWeb do
