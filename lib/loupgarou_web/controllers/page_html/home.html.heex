@@ -2,10 +2,17 @@
 <p>&nbsp;</p>
 <button type="button" onclick="redirectToNewGame()">New game!</button>
 <p>&nbsp;</p>
-<button type="button">Join party!</button>
+<button type="button" onclick="redirectToExistingGame()">Join party!</button>
 
 <script>
     function redirectToNewGame() {
         window.location.href = '/waiting-room-master'; 
+    }
+</script>
+
+
+<script>
+    function redirectToExistingGame() {
+        window.location.href = '/waiting-room-player'; 
     }
 </script>

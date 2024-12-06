@@ -28,6 +28,12 @@ defmodule LoupgarouWeb.Router do
     get "/waiting-room-master", PageController, :waiting_room_master
   end
 
+    #to change page
+    scope "/" , LoupgarouWeb do
+      pipe_through :browser
+
+      get "/waiting-room-player", PageController, :waiting_room_player
+    end
 
   # Other scopes may use custom stacks.
   # scope "/api", LoupgarouWeb do

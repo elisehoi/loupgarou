@@ -10,4 +10,8 @@ defmodule LoupgarouWeb.PageController do
   def waiting_room_master(conn, _params) do
     render(conn, "waiting_room_master.html")
   end
+
+  def waiting_room_player(conn, _params) do
+    render(conn, "waiting_room_player.html")
+  end
 end
