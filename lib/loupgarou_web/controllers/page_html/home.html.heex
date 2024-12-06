@@ -18,15 +18,15 @@
         }
 
         function redirectToNewGame() {
-            const name = getName();
-            if (name && (name !== 'Write your own name here')) {
-                console.log('Starting new game with name:', name);
-                // Example: Add name to the URL as a query parameter
-                window.location.href = `/waiting-room-master?name=${encodeURIComponent(name)}`;
-            } else {
-                alert('Please enter your name!');
-            }
-        }
+          const name = getName();
+          if (name && (name !== 'Write your own name here')) {
+              console.log('Starting new game with name:', name);
+              //Edit Elise Dec 6 13:22
+              window.location.href = `/create_game_room?name=${encodeURIComponent(name)}`;
+          } else {
+              alert('Please enter your name!');
+          }
+      }
 
         function redirectToExistingGame() {
             const name = getName();
@@ -40,15 +40,6 @@
         }
     </script>
 
-
-    
-  <!-- Author Elise Nov 29 12:09 PM --> 
-
-    
-     <p>&nbsp;</p>
-    <form action="/create_game_room" method="post">
-      <button type="submit">Create Room Elise button that does not work lol</button>
-    </form>
 
   
 
