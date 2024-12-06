@@ -1,18 +1,40 @@
-<h1><span style="color: #ff0000;">LOUP GAROU (ALMOST) ORIGINAL GAME</span></h1>
-<p>&nbsp;</p>
-<button type="button" onclick="redirectToNewGame()">New game!</button>
-<p>&nbsp;</p>
-<button type="button" onclick="redirectToExistingGame()">Join party!</button>
-
-<script>
-    function redirectToNewGame() {
-        window.location.href = '/waiting-room-master'; 
-    }
-</script>
 
 
-<script>
-    function redirectToExistingGame() {
-        window.location.href = '/waiting-room-player'; 
-    }
-</script>
+    <h1><span style="color: #2e4b85;">LOUP GAROU (ALMOST) ORIGINAL GAME</span></h1>
+    <p>🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺</p>
+    <p>&nbsp;</p>
+    <p><cite contenteditable="true" id="nameInput">Write your own name here</cite></p>
+    <p>&nbsp;</p>
+    <button type="button" onclick="redirectToNewGame()">New game!</button>
+    <p>&nbsp;</p>
+    <button type="button" onclick="redirectToExistingGame()">Join party!</button>
+
+    <script>
+        function getName() {
+            // Retrieve the name from the contenteditable element
+            return document.getElementById('nameInput').innerText.trim();
+        }
+
+        function redirectToNewGame() {
+            const name = getName();
+            if (name && (name !== 'Write your own name here')) {
+                console.log('Starting new game with name:', name);
+                // Example: Add name to the URL as a query parameter
+                window.location.href = `/waiting-room-master?name=${encodeURIComponent(name)}`;
+            } else {
+                alert('Please enter your name!');
+            }
+        }
+
+        function redirectToExistingGame() {
+            const name = getName();
+            if (name && (name !== 'Write your own name here')) {
+                console.log('Joining existing game with name:', name);
+                // Example: Add name to the URL as a query parameter
+                window.location.href = `/join-game?name=${encodeURIComponent(name)}`;
+            } else {
+                alert('Please enter your name!');
+            }
+        }
+    </script>
+
