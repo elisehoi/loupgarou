@@ -19,7 +19,12 @@ defmodule LoupgarouWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    ## Author Elise Nov 29 11:59 AM
+    # Create game room
+    post "/create_game_room", PageController, :create_game_room
   end
+
+## Author Marta DL dec 6 10:18AM
 
   #to change page
   scope "/" , LoupgarouWeb do
@@ -34,6 +39,21 @@ defmodule LoupgarouWeb.Router do
 
       get "/waiting-room-player", PageController, :waiting_room_player
     end
+
+  #to change page
+  scope "/" , LoupgarouWeb do
+    pipe_through :browser
+
+    get "/waiting-room-master", PageController, :waiting_room_master
+  end
+
+    #to change page
+    scope "/" , LoupgarouWeb do
+      pipe_through :browser
+
+      get "/waiting-room-player", PageController, :waiting_room_player
+    end
+
 
   # Other scopes may use custom stacks.
   # scope "/api", LoupgarouWeb do
