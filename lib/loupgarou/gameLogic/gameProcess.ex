@@ -13,47 +13,51 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.cast(__MODULE__, {:addPlayer, playerName})
   end
 
-  def getState() do
-    GenServer.call(__MODULE__, {:getState})
+  def getmapOfPlayersAndPhaseOfTheGame() do
+    GenServer.call(__MODULE__, {:getmapOfPlayersAndPhaseOfTheGame})
   end
 
   def getPlayer(playerName) do
     GenServer.call(__MODULE__, {:getPlayer, playerName})
   end
 
-
+  # loop: same as while go on robot loop but for the player processes (handles messages)
+  # mapOfPlayersAndPhaseOfTheGame : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
+  
   @impl true
-  def init(host) do
-    pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [host, :unknown, :alive])
-    # Process.register(pid, host)
-    initial_state = %{players: [%{host=>pid}],
+  def init(playername) do
+    pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playername, :unknown, :alive])
+  
+    initial_mapOfPlayersAndPhaseOfTheGame = %{players: [%{playername=>pid}],
                       phase: :waiting # or day or Night
                       }
 
     IO.puts("GenServer initialized ") # get pid to track which gameProcess has be initialized??
-    {:ok, initial_state}
+    {:ok, initial_mapOfPlayersAndPhaseOfTheGame}
   end
 
+# just does stuff with no reply
   @impl true
-  def handle_cast({:addPlayer, newPlayer}, state) do
+  def handle_cast({:addPlayer, newPlayer}, mapOfPlayersAndPhaseOfTheGame) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [newPlayer, :unknown, :alive])
     # Process.register(pid, newPlayer)
-    newPlayerList = state.players ++ [%{newPlayer=>pid}]
-    newState = %{state| players: newPlayerList}
+    newPlayerList = mapOfPlayersAndPhaseOfTheGame.players ++ [%{newPlayer=>pid}]
+    newmapOfPlayersAndPhaseOfTheGame = %{mapOfPlayersAndPhaseOfTheGame| players: newPlayerList}
     IO.puts("new player has been added")
-    {:noreply, newState}
+    {:noreply, newmapOfPlayersAndPhaseOfTheGame}
+  end
+
+# replies to a request
+  @impl true
+  def handle_call({:getmapOfPlayersAndPhaseOfTheGame}, _from, mapOfPlayersAndPhaseOfTheGame) do
+    {:reply, mapOfPlayersAndPhaseOfTheGame, mapOfPlayersAndPhaseOfTheGame}
   end
 
   @impl true
-  def handle_call({:getState}, _from, state) do
-    {:reply, state, state}
-  end
-
-  @impl true
-  def handle_call({:getPlayer, playerName}, _from, state) do
-    case Enum.find(state.players, fn player -> Map.has_key?(player, playerName) end) do
-      nil-> {:reply, "help", state}
-      player -> {:reply, player[playerName], state}
+  def handle_call({:getPlayer, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
+    case Enum.find(mapOfPlayersAndPhaseOfTheGame.players, fn player -> Map.has_key?(player, playerName) end) do
+      nil-> {:reply, "help", mapOfPlayersAndPhaseOfTheGame}
+      player -> {:reply, player[playerName], mapOfPlayersAndPhaseOfTheGame}
     end
   end
 end
