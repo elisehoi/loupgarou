@@ -22,9 +22,19 @@ end
 
 
 # create game room using the access code, redirect to a new page wirh the access code as URL
+# TODO how to extract the name of the player
+# TODO connect the Gameprocess to its unique code, so that it can be accessed through this code. 
 def create_game_room(conn, _params) do
     code = generate_access_code()
-    redirect(conn, to: "/#{code}")
+    case Loupgarou.GameLogic.GameProcess.start_link(:idk) do
+      # If the creation of the gameProcess is successful, it will redirect to the other route
+      {:ok, _pid} ->
+        redirect(conn, to: "/#{code}")
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
+        |> redirect(to: "/")
+    end
   end
 
 def join_game_room(conn, %{"code" => code}) do

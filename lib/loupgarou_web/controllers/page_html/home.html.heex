@@ -1,64 +1,66 @@
     <!-- Author Marta DL dec 6 10:18AM --> 
 
 
-
     <h1><span style="color: #2e4b85;">LOUP GAROU (ALMOST) ORIGINAL GAME</span></h1>
     <p>🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺 🐺</p>
     <p>&nbsp;</p>
-    <p><cite contenteditable="true" id="nameInput">Write your name here</cite></p>
+    <input type="text" id="nameInput" placeholder="Write your name here" style="width: 20%; padding: 10px; font-size: 16px;">
     <p>&nbsp;</p>
     <button type="button" onclick="redirectToNewGame()">New game!</button>
     <p>&nbsp;</p>
-    <p><cite contenteditable="true" id="gameCodeInput">Enter game code here</cite></p>
+    <input type="text" id="gameCodeInput" placeholder="Enter game code here" style="width: 20%; padding: 10px; font-size: 16px;">
     <p>&nbsp;</p>
     <button type="button" onclick="redirectToExistingGame()">Join existing game!</button>
+
 
     <script>
         function getName() {
             // Retrieve the name from the contenteditable element
-            return document.getElementById('nameInput').innerText.trim();
+            return document.getElementById('nameInput').value;
         }
 
         function getGameCodeInput() {
             // Retrieve the name from the contenteditable element
-            return document.getElementById('gameCodeInput').innerText.trim();
+            return document.getElementById('gameCodeInput').value;
         }
 
         function redirectToNewGame() {
-          const name = getName();
-          if (name && (name !== 'Write your name here')) {
-              console.log('Starting new game with name:', name);
-              //Edit Elise Dec 6 13:22
-              window.location.href = `/create_game_room?name=${encodeURIComponent(name)}`;
-          } else {
-              alert('Please enter your name!');
-          }
-      }
+            const name = getName();
+            if (name !== "") {
+                console.log('Starting new game with name:', name);
+                //Edit Elise Dec 6 13:22
+                window.location.href = `/create_game_room?name=${encodeURIComponent(name)}`;
+            } else {
+                alert('Please enter your name!');
+            }
+        }
+
 
         function redirectToExistingGame() {
-    const name = getName();
-    const gameCode = getGameCodeInput();
+            const name = getName();
+            const gameCode = getGameCodeInput();
+            if (name == '') {
+                alert('Please enter your name!');
+                return;
+            }
 
-    if (!name || name === 'Write your name here') {
-        alert('Please enter your name!');
-        return;
-    }
+            if (!gameCode) {
+                alert('Please enter a valid game code!');
+                return;
+        }
 
-    if (!gameCode) {
-        alert('Please enter a valid game code!');
-        return;
-    }
-
-    console.log('Checking if game room exists for code:', gameCode);
+        console.log('Checking if game room exists for code:', gameCode);
 
 // TODO LISE MAKE SURE THAT GENERATING A NEW ROOM BY ENTERNING A RANDOM CODE DOES NOT WORK
-    // Make a request to the server to check if the room exists
+// Make a request to the server to check if the room exists
+
     fetch(`/join_game_room/${encodeURIComponent(gameCode)}`)
         .then(response => {
             if (response.ok) {
                 console.log('Room exists, redirecting...');
                 window.location.href = `/join_game_room/${encodeURIComponent(gameCode)}?name=${encodeURIComponent(name)}`;
             } else {
+                // TODO this part can be removed? There's a method that creates a new room if the code doesn't exist....
                 alert('The game room with the provided code does not exist!');
             }
         })
@@ -66,7 +68,7 @@
             console.error('Error checking game room:', error);
             alert('An error occurred while checking the game room. Please try again.');
         });
-}
+    }
 
     </script>
 
