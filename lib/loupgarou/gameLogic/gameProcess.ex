@@ -52,8 +52,8 @@ defmodule Loupgarou.GameLogic.GameProcess do
   @impl true
   def handle_call({:getPlayer, playerName}, _from, state) do
     case Enum.find(state.players, fn player -> Map.has_key?(player, playerName) end) do
-      true -> {:reply, player[playerName], state}
-      false-> {:reply, "help", state}
+      player -> {:reply, player[playerName], state}
+      nil-> {:reply, "help", state}
     end
   end
 end
