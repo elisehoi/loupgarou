@@ -2,35 +2,40 @@ defmodule Loupgarou.GameLogic.GameProcess do
   # List of players and their role, stored as a list of map or tuple
   use GenServer
 
-  def start_link(hostID) do
-    GenServer.start_link(__MODULE__, hostID, name: :idk)
+  def start(playerName, code) do
+    GenServer.start_link(__MODULE__, playerName, name: String.to_atom(code))
   end
 
   #cast used to send synchronous request. The problem could be that some feature aren't instantiated yet before used...
   #call used to send asynchrounous request, meaning the caller cannot do anything until it receives a reply from this method
-  def add_player(playerName) do
+  def add_player(playerName, code) do
     #Maybe use call? It won't be synchrounous, but avoid the problem not all players are added before the game starts??
-    GenServer.cast(__MODULE__, {:addPlayer, playerName})
+    GenServer.cast(String.to_atom(code), {:addPlayer, playerName})
   end
 
-  def getmapOfPlayersAndPhaseOfTheGame() do
-    GenServer.call(__MODULE__, {:getmapOfPlayersAndPhaseOfTheGame})
+  def getmapOfPlayersAndPhaseOfTheGame(code) do
+    GenServer.call(String.to_atom(code), {:getmapOfPlayersAndPhaseOfTheGame})
   end
 
-  def getPlayer(playerName) do
-    GenServer.call(__MODULE__, {:getPlayer, playerName})
+  def getPlayer(playerName, code) do
+    GenServer.call(String.to_atom(code), {:getPlayer, playerName})
   end
+
+  def getPlayerList(code) do
+    GenServer.call(String.to_atom(code), {:getPlayerList})
+  end
+
 
   # loop: same as while go on robot loop but for the player processes (handles messages)
   # mapOfPlayersAndPhaseOfTheGame : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
-  
+
   @impl true
-  def init(playername) do
-    pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playername, :unknown, :alive])
-  
-    initial_mapOfPlayersAndPhaseOfTheGame = %{players: [%{playername=>pid}],
-                      phase: :waiting # or day or Night
-                      }
+  def init(playerName) do
+    pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playerName, :unknown, :alive])
+    # Process.register(pid, host)
+    initial_mapOfPlayersAndPhaseOfTheGame = %{players: [%{playerName=>pid}],
+                                              phase: :waiting # or day or Night
+                                              }
 
     IO.puts("GenServer initialized ") # get pid to track which gameProcess has be initialized??
     {:ok, initial_mapOfPlayersAndPhaseOfTheGame}
@@ -60,4 +65,10 @@ defmodule Loupgarou.GameLogic.GameProcess do
       player -> {:reply, player[playerName], mapOfPlayersAndPhaseOfTheGame}
     end
   end
+
+  @impl true
+  def handle_call({:getPlayerList}, _from, mapOfPlayersAndPhaseOfTheGame) do
+    {:reply, mapOfPlayersAndPhaseOfTheGame.players, mapOfPlayersAndPhaseOfTheGame}
+  end
+
 end

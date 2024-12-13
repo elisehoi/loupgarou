@@ -16,8 +16,7 @@ defmodule Loupgarou.Application do
       # Start a worker by calling: Loupgarou.Worker.start_link(arg)
       # {Loupgarou.Worker, arg},
       # Start to serve requests, typically the last entry
-      LoupgarouWeb.Endpoint,
-      Loupgarou.GameLogic.GameProcess
+      LoupgarouWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

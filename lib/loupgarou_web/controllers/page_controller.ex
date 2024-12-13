@@ -16,11 +16,6 @@ defmodule LoupgarouWeb.PageController do
     |> binary_part(0, 5)
   end
 
-def waiting_room_master(conn, %{"code" => code}) do
-  render(conn, "waiting_room_master.html", code: code)
-end
-
-
 # create game room using the access code, redirect to a new page wirh the access code as URL
 # TODO how to extract the name of the player
 # TODO connect the Gameprocess to its unique code, so that it can be accessed through this code.
@@ -31,19 +26,21 @@ def create_game_room(conn, _params) do
     # case Loupgarou.GameLogic.GameProcess.start_link(playerName, code) do
 
 # THE PROCESS FAILS TO BE CREATED
-    #case Loupgarou.GameLogic.GameProcess.start_link(code) do
+    case Loupgarou.GameLogic.GameProcess.start("hello", code) do
       # If the creation of the gameProcess is successful, it will redirect to the other route
-    #  {:ok, _pid} ->
+      {:ok, _pid} ->
         redirect(conn, to: "/#{code}")
-    #  {:error, reason} ->
-   #     conn
-  #      |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
-  #      |> redirect(to: "/")
- #   end
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
+        |> redirect(to: "/")
+    end
 
   end
 
+#TODO: extract the name of the player
 def join_game_room(conn, %{"code" => code}) do
+    Loupgarou.GameLogic.GameProcess.add_player("player", code)
     redirect(conn, to: "/#{code}")
   end
 
@@ -51,6 +48,11 @@ def join_game_room(conn, %{"code" => code}) do
 #def waiting_room_master(conn, _params) do
 #    render(conn, "waiting_room_master.html")
 #end
+
+def waiting_room_master(conn, %{"code" => code}) do
+  players=Loupgarou.GameLogic.GameProcess.getPlayerList(code)
+  render(conn, "waiting_room_master.html", code: code, players: players)
+end
 
   def waiting_room_player(conn, _params) do
     render(conn, "waiting_room_player.html")
