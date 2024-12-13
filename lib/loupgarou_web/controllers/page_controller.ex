@@ -28,7 +28,7 @@ def create_game_room(conn, _params) do
     code = generate_access_code()
     # TODO: extract playerName and code. The first parameter of start_link should be the player name and the second the code
     # case Loupgarou.GameLogic.GameProcess.start_link(playerName, code) do
-    case Loupgarou.GameLogic.GameProcess.start_link(:lkljfsd) do
+    case Loupgarou.GameLogic.GameProcess.start_link("dfhsk") do
       # If the creation of the gameProcess is successful, it will redirect to the other route
       {:ok, _pid} ->
         redirect(conn, to: "/#{code}")

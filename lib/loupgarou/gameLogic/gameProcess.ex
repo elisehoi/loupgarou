@@ -3,7 +3,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
   use GenServer
 
   def start_link(hostID) do
-    GenServer.start_link(__MODULE__, hostID, name: hostID)
+    GenServer.start_link(__MODULE__, hostID, name: :idk)
   end
 
   #cast used to send synchronous request. The problem could be that some feature aren't instantiated yet before used...
