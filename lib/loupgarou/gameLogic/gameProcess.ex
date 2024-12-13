@@ -3,7 +3,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
   use GenServer
 
   def start_link(hostID) do
-    GenServer.start_link(__MODULE__, hostID, name: __MODULE__)
+    GenServer.start_link(__MODULE__, hostID, name: hostID)
   end
 
   #cast used to send synchronous request. The problem could be that some feature aren't instantiated yet before used...
@@ -52,8 +52,8 @@ defmodule Loupgarou.GameLogic.GameProcess do
   @impl true
   def handle_call({:getPlayer, playerName}, _from, state) do
     case Enum.find(state.players, fn player -> Map.has_key?(player, playerName) end) do
-      player -> {:reply, player[playerName], state}
       nil-> {:reply, "help", state}
+      player -> {:reply, player[playerName], state}
     end
   end
 end
