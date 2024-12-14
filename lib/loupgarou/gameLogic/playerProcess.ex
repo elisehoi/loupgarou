@@ -5,6 +5,8 @@ defmodule Loupgarou.GameLogic.PlayerProcess do
     receive do
       {:setRole, newRole} -> loop(name, newRole, status)
 
+      #{:getRole, from} -> send()
+
       {:sleep} -> IO.puts("sleeping")
 
       {:wolfWakeUp} when role == :wolf -> IO.puts("wake up")

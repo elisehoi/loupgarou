@@ -17,13 +17,19 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:getmapOfPlayersAndPhaseOfTheGame})
   end
 
-  def getPlayer(playerName, code) do
-    GenServer.call(String.to_atom(code), {:getPlayer, playerName})
+  def getPlayerPID(playerName, code) do
+    GenServer.call(String.to_atom(code), {:getPlayerPID, playerName})
   end
 
   def getPlayerList(code) do
     GenServer.call(String.to_atom(code), {:getPlayerList})
   end
+
+  def getRole(playerName, code) do
+    GenServer.call(String.to_atom(code), {:getRole, playerName})
+  end
+
+
 
 
   # loop: same as while go on robot loop but for the player processes (handles messages)
@@ -59,7 +65,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
   end
 
   @impl true
-  def handle_call({:getPlayer, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
+  def handle_call({:getPlayerPID, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
     case Enum.find(mapOfPlayersAndPhaseOfTheGame.players, fn player -> Map.has_key?(player, playerName) end) do
       nil-> {:reply, "help", mapOfPlayersAndPhaseOfTheGame}
       player -> {:reply, player[playerName], mapOfPlayersAndPhaseOfTheGame}
@@ -70,5 +76,22 @@ defmodule Loupgarou.GameLogic.GameProcess do
   def handle_call({:getPlayerList}, _from, mapOfPlayersAndPhaseOfTheGame) do
     {:reply, mapOfPlayersAndPhaseOfTheGame.players, mapOfPlayersAndPhaseOfTheGame}
   end
+
+  @impl true
+  def handle_call({:getRole, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
+    case Enum.find(mapOfPlayersAndPhaseOfTheGame.players, fn player -> Map.has_key?(player, playerName) end) do
+      nil -> {:error, "The player doesn't exist", mapOfPlayersAndPhaseOfTheGame}
+      {_player, pid} -> send(pid, {:getRole, self()})
+                        receive do
+                          {:replyRole, role} -> {:reply, role, mapOfPlayersAndPhaseOfTheGame}
+                        after
+                          2000 -> {:reply, "Timeout while getting Role", mapOfPlayersAndPhaseOfTheGame}
+                        end
+    end
+
+
+  end
+
+
 
 end

@@ -57,4 +57,33 @@ end
   def waiting_room_player(conn, _params) do
     render(conn, "waiting_room_player.html")
   end
+
+  def distribute_role(conn, _params) do
+    playerList = Loupgarou.GameLogic.GameProcess.getPlayerList("code")
+    nbOfPlayers = length(playerList)
+    # ration between villlagers and werewolf = 1 to 3. => 1 Wolf = 3 Villagers
+    nbOfWolf = round(nbOfPlayers/3)
+
+    # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
+    Enum.each(nbOfWolf, fn _player->
+      pid = Enum.at(Enum.random(playerList),1)
+      send(pid,{:setRole, :WereWolf})
+    end)
+    # If player's role == :unknown, then the role :Villager is assign to it.
+    # TODO: extract the code. It's used to call the correct GameProcess.
+    Enum.each(playerList, fn player ->
+      name=Enum.at(player, 0)
+      pid = Enum.at(player, 1)
+      role = Loupgarou.GameLogic.GameProcess.getRole(name, "code")
+      if(role == :unknown) do
+        send(pid,{:setRole, :WereWolf})
+      end
+    end)
+
+    render(conn, "waiting_room_master.html")
+
+  end
+
+
+
 end

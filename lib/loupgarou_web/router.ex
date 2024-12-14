@@ -25,25 +25,11 @@ defmodule LoupgarouWeb.Router do
     get "/:code", PageController, :waiting_room_master # Dynamic route for game rooms
 
     get "/join_game_room/:code", PageController, :join_game_room
+    get "/role_distribution", PageController, :distribute_role
 
 
   end
 
-## Author Marta DL dec 6 10:18AM
-
-  #to change page
-  scope "/" , LoupgarouWeb do
-    pipe_through :browser
-
-    get "/waiting-room-master", PageController, :waiting_room_master
-  end
-
-    #to change page
-    scope "/" , LoupgarouWeb do
-      pipe_through :browser
-
-      get "/waiting-room-player", PageController, :waiting_room_player
-    end
 
 
   # Other scopes may use custom stacks.
