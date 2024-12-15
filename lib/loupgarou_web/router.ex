@@ -23,9 +23,9 @@ defmodule LoupgarouWeb.Router do
     # Create game room
     get "/create_game_room", PageController, :create_game_room
     get "/:code", PageController, :waiting_room_master # Dynamic route for game rooms
-
     get "/join_game_room/:code", PageController, :join_game_room
-    get "/role_distribution", PageController, :distribute_role
+    get "/role_distribution/:code", PageController, :distribute_role
+
 
 
   end

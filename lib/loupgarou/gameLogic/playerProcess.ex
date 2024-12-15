@@ -3,9 +3,11 @@ defmodule Loupgarou.GameLogic.PlayerProcess do
 
   def loop(name, role, status) do
     receive do
-      {:setRole, newRole} -> loop(name, newRole, status)
+      {:setRole, newRole} -> IO.inspect("received new Role")
+                            loop(name, newRole, status)
 
-      #{:getRole, from} -> send()
+
+      {:getRole, from} -> send(from, {:replyRole, role})
 
       {:sleep} -> IO.puts("sleeping")
 

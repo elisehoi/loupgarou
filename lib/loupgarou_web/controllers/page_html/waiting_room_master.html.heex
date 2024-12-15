@@ -1,16 +1,13 @@
 <p>Your game with the game code: <%= @code %>; will start as soon as you wish</p>
 <p>players online: </p>
-<ul>
-  <%= for player_map <- @players do %>
-    <% {player_name, _pid} = Enum.at(player_map, 0) %>
-    <li><%= player_name %></li>
-  <% end %>
-</ul>
-<p>&nbsp;</p>
-<button type="button" onclick = "switchToRoleDistributionPage()">Let's begin</button>
+<%= for{playerName, _pid} <- @playerMap do %>
+  <p><%= playerName %></p>
+<% end %>
 
-<script> 
-    function switchToRoleDistributionPage(){
-        window.location.href = '/role_distribution';
+<button type="button" onclick={"redirectToRoleDistribution('#{@code}')"}>Let's begin</button>
+
+  <script>
+    function redirectToRoleDistribution(code){
+      window.location.href = '/role_distribution/' + code
     }
-</script>
+  </script>

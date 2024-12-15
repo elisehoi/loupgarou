@@ -21,8 +21,8 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:getPlayerPID, playerName})
   end
 
-  def getPlayerList(code) do
-    GenServer.call(String.to_atom(code), {:getPlayerList})
+  def getPlayerMap(code) do
+    GenServer.call(String.to_atom(code), {:getPlayerMap})
   end
 
   def getRole(playerName, code) do
@@ -39,7 +39,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
   def init(playerName) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playerName, :unknown, :alive])
     # Process.register(pid, host)
-    initial_mapOfPlayersAndPhaseOfTheGame = %{players: [%{playerName=>pid}],
+    initial_mapOfPlayersAndPhaseOfTheGame = %{players: %{playerName=>pid},
                                               phase: :waiting # or day or Night
                                               }
 
@@ -52,8 +52,8 @@ defmodule Loupgarou.GameLogic.GameProcess do
   def handle_cast({:addPlayer, newPlayer}, mapOfPlayersAndPhaseOfTheGame) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [newPlayer, :unknown, :alive])
     # Process.register(pid, newPlayer)
-    newPlayerList = mapOfPlayersAndPhaseOfTheGame.players ++ [%{newPlayer=>pid}]
-    newmapOfPlayersAndPhaseOfTheGame = %{mapOfPlayersAndPhaseOfTheGame| players: newPlayerList}
+    players = Map.put(mapOfPlayersAndPhaseOfTheGame.players, newPlayer, pid)
+    newmapOfPlayersAndPhaseOfTheGame = %{mapOfPlayersAndPhaseOfTheGame| players: players}
     IO.puts("new player has been added")
     {:noreply, newmapOfPlayersAndPhaseOfTheGame}
   end
@@ -66,30 +66,28 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
   @impl true
   def handle_call({:getPlayerPID, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
-    case Enum.find(mapOfPlayersAndPhaseOfTheGame.players, fn player -> Map.has_key?(player, playerName) end) do
-      nil-> {:reply, "help", mapOfPlayersAndPhaseOfTheGame}
-      player -> {:reply, player[playerName], mapOfPlayersAndPhaseOfTheGame}
-    end
+    # map.get look for the value associated with the key playerName.
+    pid = Map.get(mapOfPlayersAndPhaseOfTheGame.players, playerName, nil)
+    {:reply, pid, mapOfPlayersAndPhaseOfTheGame}
   end
 
   @impl true
-  def handle_call({:getPlayerList}, _from, mapOfPlayersAndPhaseOfTheGame) do
+  def handle_call({:getPlayerMap}, _from, mapOfPlayersAndPhaseOfTheGame) do
     {:reply, mapOfPlayersAndPhaseOfTheGame.players, mapOfPlayersAndPhaseOfTheGame}
   end
 
   @impl true
   def handle_call({:getRole, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
-    case Enum.find(mapOfPlayersAndPhaseOfTheGame.players, fn player -> Map.has_key?(player, playerName) end) do
-      nil -> {:error, "The player doesn't exist", mapOfPlayersAndPhaseOfTheGame}
-      {_player, pid} -> send(pid, {:getRole, self()})
-                        receive do
-                          {:replyRole, role} -> {:reply, role, mapOfPlayersAndPhaseOfTheGame}
-                        after
-                          2000 -> {:reply, "Timeout while getting Role", mapOfPlayersAndPhaseOfTheGame}
-                        end
+    case Map.get(mapOfPlayersAndPhaseOfTheGame.players, playerName, nil) do
+      nil -> {:reply, "The player doesn't exist", mapOfPlayersAndPhaseOfTheGame}
+      pid -> send(pid, {:getRole, self()})
+      receive do
+        {:replyRole, role} -> {:reply, role, mapOfPlayersAndPhaseOfTheGame}
+      after
+        2000 -> {:reply, "Timeout while getting Role", mapOfPlayersAndPhaseOfTheGame}
+      end
+
     end
-
-
   end
 
 

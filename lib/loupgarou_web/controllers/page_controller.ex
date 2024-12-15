@@ -10,7 +10,7 @@ defmodule LoupgarouWeb.PageController do
 
 ## Author Elise - Nov 29 11:48 AM
 # generate access code for the game and url of the room
- defp generate_access_code do
+  defp generate_access_code do
     :crypto.strong_rand_bytes(4)
     |> Base.encode16()
     |> binary_part(0, 5)
@@ -19,13 +19,12 @@ defmodule LoupgarouWeb.PageController do
 # create game room using the access code, redirect to a new page wirh the access code as URL
 # TODO how to extract the name of the player
 # TODO connect the Gameprocess to its unique code, so that it can be accessed through this code.
-def create_game_room(conn, _params) do
+  def create_game_room(conn, _params) do
     code = generate_access_code()
 
     # TODO: extract playerName and code. The first parameter of start_link should be the player name and the second the code
     # case Loupgarou.GameLogic.GameProcess.start_link(playerName, code) do
 
-# THE PROCESS FAILS TO BE CREATED
     case Loupgarou.GameLogic.GameProcess.start("hello", code) do
       # If the creation of the gameProcess is successful, it will redirect to the other route
       {:ok, _pid} ->
@@ -39,7 +38,7 @@ def create_game_room(conn, _params) do
   end
 
 #TODO: extract the name of the player
-def join_game_room(conn, %{"code" => code}) do
+  def join_game_room(conn, %{"code" => code}) do
     Loupgarou.GameLogic.GameProcess.add_player("player", code)
     redirect(conn, to: "/#{code}")
   end
@@ -49,41 +48,43 @@ def join_game_room(conn, %{"code" => code}) do
 #    render(conn, "waiting_room_master.html")
 #end
 
-def waiting_room_master(conn, %{"code" => code}) do
-  players=Loupgarou.GameLogic.GameProcess.getPlayerList(code)
-  render(conn, "waiting_room_master.html", code: code, players: players)
-end
+  def waiting_room_master(conn, %{"code" => code}) do
+    playerMap=Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    IO.inspect(playerMap)
+    render(conn, "waiting_room_master.html", code: code, playerMap: playerMap)
+  end
 
   def waiting_room_player(conn, _params) do
     render(conn, "waiting_room_player.html")
   end
 
-  def distribute_role(conn, _params) do
-    playerList = Loupgarou.GameLogic.GameProcess.getPlayerList("code")
-    nbOfPlayers = length(playerList)
+  def distribute_role(conn, %{"code" => code}) do
+    IO.inspect("the code is:#{code}")
+    playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    nbOfPlayers = map_size(playerMap)
     # ration between villlagers and werewolf = 1 to 3. => 1 Wolf = 3 Villagers
     nbOfWolf = round(nbOfPlayers/3)
 
-    # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
-    Enum.each(nbOfWolf, fn _player->
-      pid = Enum.at(Enum.random(playerList),1)
-      send(pid,{:setRole, :WereWolf})
+
+     # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
+     Enum.each(1..nbOfWolf, fn _i ->
+      {_playerName, pid}= Enum.random(Map.to_list(playerMap))
+      send(pid, {:setRole, :Werewolf})
     end)
-    # If player's role == :unknown, then the role :Villager is assign to it.
-    # TODO: extract the code. It's used to call the correct GameProcess.
-    Enum.each(playerList, fn player ->
-      name=Enum.at(player, 0)
-      pid = Enum.at(player, 1)
-      role = Loupgarou.GameLogic.GameProcess.getRole(name, "code")
+
+
+    # If player's role == :unknown, then the role :Villager is assign to this player.
+    Enum.each(playerMap, fn {playerName, pid} ->
+      role = Loupgarou.GameLogic.GameProcess.getRole(playerName, code)
       if(role == :unknown) do
-        send(pid,{:setRole, :WereWolf})
+        send(pid,{:setRole, :Villager})
       end
     end)
 
-    render(conn, "waiting_room_master.html")
+    render(conn, "role_distribution.html")
+
 
   end
-
 
 
 end
