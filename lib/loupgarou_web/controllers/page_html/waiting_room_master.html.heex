@@ -1,11 +1,13 @@
 <!-- Author Marta DL dec 6 10:18AM --> 
-<p>Your game with the game code: <%= @code %>; will start as soon as you wish</p>
-<p>&nbsp;players online: </p>
+<p>Your game with the game code <%= @code %> will start as soon as you wish!</p>
+<p>&nbsp &nbsp</p>
+<p>Players online:</p>
+<p>&nbsp</p>
 <ul>
   <%= for player_map <- @players do %>
     <% {player_name, _pid} = Enum.at(player_map, 0) %>
-    <li><%= player_name %></li>
+    <li>- <%= player_name %></li>
   <% end %>
 </ul>
 <p>&nbsp;</p>
-<p><button type="button">Let's begin</button></p>
+<p><button type="button">Let's begin !</button></p>

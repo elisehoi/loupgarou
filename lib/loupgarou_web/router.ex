@@ -25,7 +25,8 @@ defmodule LoupgarouWeb.Router do
     get "/:code", PageController, :waiting_room_master # Dynamic route for game rooms
 
     get "/join_game_room/:code", PageController, :join_game_room
-
+    # Route to check if a game room exists
+    get "/check_game_room", PageController, :check_game_room
 
   end
 

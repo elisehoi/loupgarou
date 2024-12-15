@@ -17,19 +17,17 @@ defmodule LoupgarouWeb.PageController do
   end
 
 # create game room using the access code, redirect to a new page wirh the access code as URL
-# TODO how to extract the name of the player
 # TODO connect the Gameprocess to its unique code, so that it can be accessed through this code.
-def create_game_room(conn, _params) do
+def create_game_room(conn, %{"name" => creatorPlayerName}) do
     code = generate_access_code()
 
-    # TODO: extract playerName and code. The first parameter of start_link should be the player name and the second the code
-    # case Loupgarou.GameLogic.GameProcess.start_link(playerName, code) do
-
-# THE PROCESS FAILS TO BE CREATED
-    case Loupgarou.GameLogic.GameProcess.start("hello", code) do
-      # If the creation of the gameProcess is successful, it will redirect to the other route
+    case Loupgarou.GameLogic.GameProcess.start(creatorPlayerName, code) do
+      # If the creation of the gameProcess is successful,
+      # it will redirect to a waiting room with the game ID as URL
       {:ok, _pid} ->
         redirect(conn, to: "/#{code}")
+        IO.puts("SUCCESSFULLY REDIRECTED TO GAMECOOODE")
+      # error case
       {:error, reason} ->
         conn
         |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
@@ -38,19 +36,24 @@ def create_game_room(conn, _params) do
 
   end
 
-#TODO: extract the name of the player
-def join_game_room(conn, %{"code" => code}) do
-    Loupgarou.GameLogic.GameProcess.add_player("player", code)
+  # check if game room exists
+  def check_game_room(conn, %{"code" => code}) do
     redirect(conn, to: "/#{code}")
   end
 
-## Author Marta DL dec 6 10:18AM
-#def waiting_room_master(conn, _params) do
-#    render(conn, "waiting_room_master.html")
-#end
+
+  def join_game_room(conn, %{"code" => code, "name" => name}) do
+    Loupgarou.GameLogic.GameProcess.add_player(name, code)
+    redirect(conn, to: "/#{code}")
+  end
+
 
 def waiting_room_master(conn, %{"code" => code}) do
+  IO.puts("CALLED WAITING ROOM MASTER")
+  # HERE THERE IS AN ERROR LISE
   players=Loupgarou.GameLogic.GameProcess.getPlayerList(code)
+  IO.puts("THE FETCHED PLAYERS ARE:")
+  IO.inspect(players)
   render(conn, "waiting_room_master.html", code: code, players: players)
 end
 
