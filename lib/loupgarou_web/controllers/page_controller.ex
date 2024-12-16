@@ -26,9 +26,10 @@ def create_game_room(conn, %{"name" => creatorPlayerName}) do
       # it will redirect to a waiting room with the game ID as URL
       {:ok, _pid} ->
         redirect(conn, to: "/#{code}")
-        IO.puts("SUCCESSFULLY REDIRECTED TO GAMECOOODE")
+        IO.puts("STEP 1 create game room. SUCCESSFULLY REDIRECTED TO GAMECOOODE")
       # error case
       {:error, reason} ->
+        IO.puts("STEP 1 create game room. ERROR")
         conn
         |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
         |> redirect(to: "/")
@@ -49,10 +50,11 @@ def create_game_room(conn, %{"name" => creatorPlayerName}) do
 
 
 def waiting_room_master(conn, %{"code" => code}) do
-  IO.puts("CALLED WAITING ROOM MASTER")
+  IO.puts("STEP 2: waiting room master display CALLED WAITING ROOM MASTER")
   # HERE THERE IS AN ERROR LISE
+  #problem = requests for a player list but the room is not yet created
   players=Loupgarou.GameLogic.GameProcess.getPlayerList(code)
-  IO.puts("THE FETCHED PLAYERS ARE:")
+    IO.puts("THE FETCHED PLAYERS ARE:")
   IO.inspect(players)
   render(conn, "waiting_room_master.html", code: code, players: players)
 end
