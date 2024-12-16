@@ -21,10 +21,11 @@ defmodule LoupgarouWeb.Router do
     get "/", PageController, :home
     ## Author Elise Nov 29 11:59 AM
     # Create game room
-    get "/create_game_room", PageController, :create_game_room
-    get "/:code", PageController, :waiting_room_master # Dynamic route for game rooms
+    get "/create_game_room/:name", PageController, :create_game_room
+    get "/:code/:name", PageController, :waiting_room_master # Dynamic route for game rooms
     get "/join_game_room/:code", PageController, :join_game_room
-    get "/role_distribution/:code", PageController, :distribute_role
+    get "/role_distribution/:code/:name", PageController, :distribute_role
+    get "/show_role/:code/:name", PageController, :show_role
 
 
 

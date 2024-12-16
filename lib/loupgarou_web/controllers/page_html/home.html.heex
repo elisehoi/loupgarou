@@ -29,7 +29,9 @@
             if (name !== "") {
                 console.log('Starting new game with name:', name);
                 //Edit Elise Dec 6 13:22
-                window.location.href = `/create_game_room?name=${encodeURIComponent(name)}`;
+                //window.location.href = `/create_game_room?name=${encodeURIComponent(name)}`;
+                
+                window.location.href = '/create_game_room/' + name
             } else {
                 alert('Please enter your name!');
             }

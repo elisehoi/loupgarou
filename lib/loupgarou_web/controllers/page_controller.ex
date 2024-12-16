@@ -19,20 +19,21 @@ defmodule LoupgarouWeb.PageController do
 # create game room using the access code, redirect to a new page wirh the access code as URL
 # TODO how to extract the name of the player
 # TODO connect the Gameprocess to its unique code, so that it can be accessed through this code.
-  def create_game_room(conn, _params) do
+  def create_game_room(conn, %{"name" => name}) do
     code = generate_access_code()
 
     # TODO: extract playerName and code. The first parameter of start_link should be the player name and the second the code
     # case Loupgarou.GameLogic.GameProcess.start_link(playerName, code) do
 
-    case Loupgarou.GameLogic.GameProcess.start("hello", code) do
+    case Loupgarou.GameLogic.GameProcess.start(name, code) do
       # If the creation of the gameProcess is successful, it will redirect to the other route
       {:ok, _pid} ->
-        redirect(conn, to: "/#{code}")
+        redirect(conn, to: "/#{code}/#{name}")
       {:error, reason} ->
         conn
         |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
         |> redirect(to: "/")
+        IO.inspect("Page Controller: create_game_room fails to create gameProcess")
     end
 
   end
@@ -43,22 +44,20 @@ defmodule LoupgarouWeb.PageController do
     redirect(conn, to: "/#{code}")
   end
 
-## Author Marta DL dec 6 10:18AM
-#def waiting_room_master(conn, _params) do
-#    render(conn, "waiting_room_master.html")
-#end
-
-  def waiting_room_master(conn, %{"code" => code}) do
+  def waiting_room_master(conn, %{"code" => code, "name" => name}) do
     playerMap=Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     IO.inspect(playerMap)
-    render(conn, "waiting_room_master.html", code: code, playerMap: playerMap)
+    render(conn, "waiting_room_master.html", code: code, playerName: name,  playerMap: playerMap)
   end
 
   def waiting_room_player(conn, _params) do
     render(conn, "waiting_room_player.html")
   end
 
-  def distribute_role(conn, %{"code" => code}) do
+
+  #TODO: To continue now, we need to get the Player's name, so that a different html page would be shown to the player according to their role.
+  #TODO: Consider to create setRole, ... function in the GameProcess for consistency. Or maybe remove getRole, by sending the message directly to the playerProcess and add a reveice block here.
+  def distribute_role(conn, %{"code" => code, "name" => name}) do
     IO.inspect("the code is:#{code}")
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbOfPlayers = map_size(playerMap)
@@ -71,6 +70,8 @@ defmodule LoupgarouWeb.PageController do
       {_playerName, pid}= Enum.random(Map.to_list(playerMap))
       send(pid, {:setRole, :Werewolf})
     end)
+    # Set the process to sleep to make sure that all the werewolf players received their role before continuing
+    Process.sleep(2000)
 
 
     # If player's role == :unknown, then the role :Villager is assign to this player.
@@ -81,10 +82,23 @@ defmodule LoupgarouWeb.PageController do
       end
     end)
 
-    render(conn, "role_distribution.html")
+    Process.sleep(2000)
+
+    redirect(conn, to: "/show_role/" <> code <> "/" <> name)
+    #render(conn, "role_distribution.html", code: code, name: name)
+  end
+
+  def show_role(conn, %{"code" => code, "name" => name}) do
+    role = Loupgarou.GameLogic.GameProcess.getRole(name, code)
+    if(role == :Werewolf) do
+      render(conn, "wolf_role.html", code: code, name: name)
+    else
+      render(conn, "villager_role.html", code: code, name: name)
+    end
 
 
   end
+
 
 
 end

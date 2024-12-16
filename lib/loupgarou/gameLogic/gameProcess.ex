@@ -10,10 +10,15 @@ defmodule Loupgarou.GameLogic.GameProcess do
   #call used to send asynchrounous request, meaning the caller cannot do anything until it receives a reply from this method
   def add_player(playerName, code) do
     #Maybe use call? It won't be synchrounous, but avoid the problem not all players are added before the game starts??
+    # The first parameter is the name assigned to each GameProcess (unique).
+    # The second parameter is the message send to the corresponding GameProcess
     GenServer.cast(String.to_atom(code), {:addPlayer, playerName})
   end
 
   def getmapOfPlayersAndPhaseOfTheGame(code) do
+
+    # call can take and third parameter.
+    # The third Parameter is the timeout duration. If the process doesn't respond within this given time, it will raise an error. By default it's set to 5000ms
     GenServer.call(String.to_atom(code), {:getmapOfPlayersAndPhaseOfTheGame})
   end
 

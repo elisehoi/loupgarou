@@ -4,10 +4,10 @@
   <p><%= playerName %></p>
 <% end %>
 
-<button type="button" onclick={"redirectToRoleDistribution('#{@code}')"}>Let's begin</button>
+<button type="button" onclick={"redirectToRoleDistribution('#{@code}', '#{@playerName}')"}>Let's begin</button>
 
   <script>
-    function redirectToRoleDistribution(code){
-      window.location.href = '/role_distribution/' + code
+    function redirectToRoleDistribution(code, playerName){
+      window.location.href = '/role_distribution/' + code + '/' + playerName
     }
   </script>
