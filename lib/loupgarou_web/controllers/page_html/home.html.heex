@@ -49,28 +49,28 @@
             if (!gameCode) {
                 alert('Please enter a valid game code!');
                 return;
-        }
+            }
 
         console.log('Checking if game room exists for code:', gameCode);
 
-// TODO LISE MAKE SURE THAT GENERATING A NEW ROOM BY ENTERNING A RANDOM CODE DOES NOT WORK
-// Make a request to the server to check if the room exists
+        // TODO LISE MAKE SURE THAT GENERATING A NEW ROOM BY ENTERNING A RANDOM CODE DOES NOT WORK
+        // Make a request to the server to check if the room exists
 
-    fetch(`/join_game_room/${encodeURIComponent(gameCode)}`)
-        .then(response => {
-            if (response.ok) {
-                console.log('Room exists, redirecting...');
-                window.location.href = `/join_game_room/${encodeURIComponent(gameCode)}?name=${encodeURIComponent(name)}`;
-            } else {
-                // TODO this part can be removed? There's a method that creates a new room if the code doesn't exist....
-                alert('The game room with the provided code does not exist!');
-            }
-        })
-        .catch(error => {
-            console.error('Error checking game room:', error);
-            alert('An error occurred while checking the game room. Please try again.');
-        });
-    }
+        //fetch(`/join_game_room/${encodeURIComponent(gameCode)}`)
+        //    .then(response => {
+        //        if (response.ok) {
+        //            console.log('Room exists, redirecting...');
+                    window.location.href = `/join_game_room/?code=${encodeURIComponent(gameCode)}&name=${encodeURIComponent(name)}`;
+        //        } else {
+                    // TODO this part can be removed? There's a method that creates a new room if the code doesn't exist....
+        //            alert('The game room with the provided code does not exist!');
+        //        }
+        //    })
+        //    .catch(error => {
+        //        console.error('Error checking game room:', error);
+        //        alert('An error occurred while checking the game room. Please try again.');
+        //    });
+        }
 
     </script>
 

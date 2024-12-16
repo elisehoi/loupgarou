@@ -28,7 +28,7 @@ defmodule LoupgarouWeb.PageController do
     case Loupgarou.GameLogic.GameProcess.start(name, code) do
       # If the creation of the gameProcess is successful, it will redirect to the other route
       {:ok, _pid} ->
-        redirect(conn, to: "/#{code}/#{name}")
+        redirect(conn, to: "/#{code}/#{name}/waiting_room_master")
       {:error, reason} ->
         conn
         |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
@@ -38,20 +38,36 @@ defmodule LoupgarouWeb.PageController do
 
   end
 
-#TODO: extract the name of the player
-  def join_game_room(conn, %{"code" => code}) do
-    Loupgarou.GameLogic.GameProcess.add_player("player", code)
-    redirect(conn, to: "/#{code}")
+# check if game room exists to join one
+defp game_room_exists?(code) do
+  case Process.whereis(String.to_atom(code)) do
+    nil -> false  # No process found, game room does not exist
+    _pid -> true   # Process found, game room exists
   end
+end
+
+
+def join_game_room(conn, %{"code" => code, "name" => name}) do
+  # Check if the game room exists
+  if game_room_exists?(code) do
+    Loupgarou.GameLogic.GameProcess.add_player(name, code)
+    redirect(conn, to: "/#{code}/#{name}/waiting_room_player")
+  else
+    conn
+    |> put_status(:not_found)
+    |> json(%{error: "Game room does not exist."})
+  end
+end
+
 
   def waiting_room_master(conn, %{"code" => code, "name" => name}) do
     playerMap=Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
-    IO.inspect(playerMap)
     render(conn, "waiting_room_master.html", code: code, playerName: name,  playerMap: playerMap)
   end
 
-  def waiting_room_player(conn, _params) do
-    render(conn, "waiting_room_player.html")
+  def waiting_room_player(conn, %{"code" => code, "name" => name}) do
+    playerMap=Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    render(conn, "waiting_room_player.html", code: code, playerName: name,  playerMap: playerMap)
   end
 
 

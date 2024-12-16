@@ -2,8 +2,8 @@ defmodule Loupgarou.GameLogic.GameProcess do
   # List of players and their role, stored as a list of map or tuple
   use GenServer
 
-  def start(playerName, code) do
-    GenServer.start_link(__MODULE__, playerName, name: String.to_atom(code))
+  def start(playerName, gameCode) do
+    GenServer.start_link(__MODULE__, playerName, name: String.to_atom(gameCode))
   end
 
   #cast used to send synchronous request. The problem could be that some feature aren't instantiated yet before used...
@@ -15,11 +15,11 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.cast(String.to_atom(code), {:addPlayer, playerName})
   end
 
-  def getmapOfPlayersAndPhaseOfTheGame(code) do
+  def getstatusDatabase(code) do
 
     # call can take and third parameter.
     # The third Parameter is the timeout duration. If the process doesn't respond within this given time, it will raise an error. By default it's set to 5000ms
-    GenServer.call(String.to_atom(code), {:getmapOfPlayersAndPhaseOfTheGame})
+    GenServer.call(String.to_atom(code), {:getstatusDatabase})
   end
 
   def getPlayerPID(playerName, code) do
@@ -38,58 +38,59 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
 
   # loop: same as while go on robot loop but for the player processes (handles messages)
-  # mapOfPlayersAndPhaseOfTheGame : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
+  # statusDatabase : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
 
   @impl true
   def init(playerName) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playerName, :unknown, :alive])
     # Process.register(pid, host)
-    initial_mapOfPlayersAndPhaseOfTheGame = %{players: %{playerName=>pid},
-                                              phase: :waiting # or day or Night
-                                              }
+    initial_statusDatabase = %{
+      players: %{playerName=>pid},
+      phase: :waiting # or day or Night
+      }
 
     IO.puts("GenServer initialized ") # get pid to track which gameProcess has be initialized??
-    {:ok, initial_mapOfPlayersAndPhaseOfTheGame}
+    {:ok, initial_statusDatabase}
   end
 
 # just does stuff with no reply
   @impl true
-  def handle_cast({:addPlayer, newPlayer}, mapOfPlayersAndPhaseOfTheGame) do
+  def handle_cast({:addPlayer, newPlayer}, statusDatabase) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [newPlayer, :unknown, :alive])
     # Process.register(pid, newPlayer)
-    players = Map.put(mapOfPlayersAndPhaseOfTheGame.players, newPlayer, pid)
-    newmapOfPlayersAndPhaseOfTheGame = %{mapOfPlayersAndPhaseOfTheGame| players: players}
+    players = Map.put(statusDatabase.players, newPlayer, pid)
+    newstatusDatabase = %{statusDatabase| players: players}
     IO.puts("new player has been added")
-    {:noreply, newmapOfPlayersAndPhaseOfTheGame}
+    {:noreply, newstatusDatabase}
   end
 
 # replies to a request
   @impl true
-  def handle_call({:getmapOfPlayersAndPhaseOfTheGame}, _from, mapOfPlayersAndPhaseOfTheGame) do
-    {:reply, mapOfPlayersAndPhaseOfTheGame, mapOfPlayersAndPhaseOfTheGame}
+  def handle_call({:getstatusDatabase}, _from, statusDatabase) do
+    {:reply, statusDatabase, statusDatabase}
   end
 
   @impl true
-  def handle_call({:getPlayerPID, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
+  def handle_call({:getPlayerPID, playerName}, _from, statusDatabase) do
     # map.get look for the value associated with the key playerName.
-    pid = Map.get(mapOfPlayersAndPhaseOfTheGame.players, playerName, nil)
-    {:reply, pid, mapOfPlayersAndPhaseOfTheGame}
+    pid = Map.get(statusDatabase.players, playerName, nil)
+    {:reply, pid, statusDatabase}
   end
 
   @impl true
-  def handle_call({:getPlayerMap}, _from, mapOfPlayersAndPhaseOfTheGame) do
-    {:reply, mapOfPlayersAndPhaseOfTheGame.players, mapOfPlayersAndPhaseOfTheGame}
+  def handle_call({:getPlayerMap}, _from, statusDatabase) do
+    {:reply, statusDatabase.players, statusDatabase}
   end
 
   @impl true
-  def handle_call({:getRole, playerName}, _from, mapOfPlayersAndPhaseOfTheGame) do
-    case Map.get(mapOfPlayersAndPhaseOfTheGame.players, playerName, nil) do
-      nil -> {:reply, "The player doesn't exist", mapOfPlayersAndPhaseOfTheGame}
+  def handle_call({:getRole, playerName}, _from, statusDatabase) do
+    case Map.get(statusDatabase.players, playerName, nil) do
+      nil -> {:reply, "The player doesn't exist", statusDatabase}
       pid -> send(pid, {:getRole, self()})
       receive do
-        {:replyRole, role} -> {:reply, role, mapOfPlayersAndPhaseOfTheGame}
+        {:replyRole, role} -> {:reply, role, statusDatabase}
       after
-        2000 -> {:reply, "Timeout while getting Role", mapOfPlayersAndPhaseOfTheGame}
+        2000 -> {:reply, "Timeout while getting Role", statusDatabase}
       end
 
     end

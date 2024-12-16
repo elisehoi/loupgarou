@@ -22,21 +22,15 @@ defmodule LoupgarouWeb.Router do
     ## Author Elise Nov 29 11:59 AM
     # Create game room
     get "/create_game_room/:name", PageController, :create_game_room
-    get "/:code/:name", PageController, :waiting_room_master # Dynamic route for game rooms
-    get "/join_game_room/:code", PageController, :join_game_room
+    get "/:code/:name/waiting_room_master", PageController, :waiting_room_master # Dynamic route for game rooms
+    get "/join_game_room/", PageController, :join_game_room
+    get "/:code/:name/waiting_room_player", PageController, :waiting_room_player
     get "/role_distribution/:code/:name", PageController, :distribute_role
     get "/show_role/:code/:name", PageController, :show_role
 
 
 
   end
-
-
-
-  # Other scopes may use custom stacks.
-  # scope "/api", LoupgarouWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:loupgarou, :dev_routes) do
