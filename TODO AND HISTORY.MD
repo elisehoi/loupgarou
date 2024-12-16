@@ -14,8 +14,8 @@
 - find why the hell there are two processes created per player when a player joinsTris
     - because of the mutilple calls of join player in home html to check if a game room exists -> replace with check game room function
     - waiting room master called but no arguments
-## Todo
-- 
-- continously update the waiting room html for it to automatically show new players appearing
 - disable start game button for the joining players, only allow the host to do so
+
+## Todo
+- continously update the waiting room html for it to automatically show new players appearing
 - disallow players for usign the same name

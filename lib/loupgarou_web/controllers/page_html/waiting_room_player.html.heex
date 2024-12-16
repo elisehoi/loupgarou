@@ -1,14 +1,11 @@
 <!-- Author Marta DL dec 6 10:18AM --> 
-<p>You are waiting for game <%= @code %> to start</p>
-<p>players online: </p>
-<%= for{playerName, _pid} <- @playerMap do %>
-  <p><%= playerName %></p>
-<% end %>
+<p>You are waiting for game <strong><%= @code %></strong> to start. The host will start the game.</p>
+<br>
+  <p>Players online:</p>
+  <br>
+  <ul style="list-style-type: disc; margin-left: 20px;">
+    <%= for {playerName, _pid} <- @playerMap do %>
+      <li style="margin-bottom: 5px;"><%= playerName %></li>
+    <% end %>
+  </ul>
 
-<button type="button" onclick={"redirectToRoleDistribution('#{@code}', '#{@playerName}')"}>Let's begin</button>
-
-  <script>
-    function redirectToRoleDistribution(code, playerName){
-      window.location.href = '/role_distribution/' + code + '/' + playerName
-    }
-  </script>
