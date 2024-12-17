@@ -4,11 +4,11 @@
     <p>&nbsp;</p>
     <input type="text" id="nameInput" placeholder="Write your name here" style="width: 20%; padding: 10px; font-size: 16px;">
     <p>&nbsp;</p>
-    <button type="button" onclick="redirectToNewGame()">New game!</button>
+    <button class="clickable-button" type="button" onclick="redirectToNewGame()">New game!</button>
     <p>&nbsp;</p>
     <input type="text" id="gameCodeInput" placeholder="Enter game code here" style="width: 20%; padding: 10px; font-size: 16px;">
     <p>&nbsp;</p>
-    <button type="button" onclick="redirectToExistingGame()">Join existing game!</button>
+    <button class="clickable-button" type="button" onclick="redirectToExistingGame()">Join existing game!</button>
 
 
     <script>
@@ -28,14 +28,12 @@
             const name = getName();
             if (name !== "") {
                 console.log('Starting new game with name:', name);
-                //Edit Elise Dec 6 13:22
-                //window.location.href = `/create_game_room?name=${encodeURIComponent(name)}`;
-                
                 window.location.href = '/create_game_room/' + name
             } else {
                 alert('Please enter your name!');
             }
         }
+
 
 
     function redirectToExistingGame() {
