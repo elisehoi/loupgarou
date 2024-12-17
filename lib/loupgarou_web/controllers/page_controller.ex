@@ -16,14 +16,9 @@ defmodule LoupgarouWeb.PageController do
     |> binary_part(0, 5)
   end
 
-# create game room using the access code, redirect to a new page wirh the access code as URL
-# TODO how to extract the name of the player
-# TODO connect the Gameprocess to its unique code, so that it can be accessed through this code.
+# create game room using the access code, redirect to a new page with the access code as URL
   def create_game_room(conn, %{"name" => name}) do
     code = generate_access_code()
-
-    # TODO: extract playerName and code. The first parameter of start_link should be the player name and the second the code
-    # case Loupgarou.GameLogic.GameProcess.start_link(playerName, code) do
 
     case Loupgarou.GameLogic.GameProcess.start(name, code) do
       # If the creation of the gameProcess is successful, it will redirect to the other route
@@ -71,7 +66,7 @@ end
   end
 
 
-  #TODO: To continue now, we need to get the Player's name, so that a different html page would be shown to the player according to their role.
+
   #TODO: Consider to create setRole, ... function in the GameProcess for consistency. Or maybe remove getRole, by sending the message directly to the playerProcess and add a reveice block here.
   def distribute_role(conn, %{"code" => code, "name" => name}) do
     IO.inspect("the code is:#{code}")
@@ -81,11 +76,13 @@ end
     nbOfWolf = round(nbOfPlayers/3)
 
 
-     # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
+    # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
+    # TODO: check that this work with nbOfWolf == 1
      Enum.each(1..nbOfWolf, fn _i ->
       {_playerName, pid}= Enum.random(Map.to_list(playerMap))
       send(pid, {:setRole, :Werewolf})
     end)
+    # TODO: Maybe add receive block to make sure that the player process has received the message (via gameProcess?)
     # Set the process to sleep to make sure that all the werewolf players received their role before continuing
     Process.sleep(2000)
 

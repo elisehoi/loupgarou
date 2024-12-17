@@ -1,12 +1,14 @@
-
-<h1>Your role is....</h1>
-<img src="https://images.vexels.com/media/users/3/128325/isolated/preview/0f52205b21536ca0dbbdac51891348e0-old-farmer-cartoon.png" alt="Trulli" >
-<h2> A Villager</h2>
-<p> The most commonplace role, a simple Villager, spends the game trying to root out who they believe the werewolves are.</p>
-<button type="button">Understand</button>
-
-
-
+<div class="role-container">
+  <h1>Your role is...</h1>
+  <img src="https://images.vexels.com/media/users/3/128325/isolated/preview/0f52205b21536ca0dbbdac51891348e0-old-farmer-cartoon.png" alt="Trulli">
+  <h2>A Villager</h2>
+  <p>The most commonplace role, a simple Villager, spends the game trying to root out who they believe the werewolves are.</p>
+  <button type="button">Understand</button>
+</div>
 
 
-
+<script> 
+    function redirectToNightTime(code, playerName){
+        window.location.href ='/night_time/'+ code + '/' + playerName
+    }
+</script>
