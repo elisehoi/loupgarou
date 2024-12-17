@@ -1,9 +1,9 @@
-defmodule Loupgarou.GameLogic.GameProcess do
+defmodule Loupgarou.GameLogic.GameProcessOGCopy do
   # List of players and their role, stored as a list of map or tuple
   use GenServer
 
   def start(playerName, gameCode) do
-    GenServer.start_link(__MODULE__, {playerName, gameCode}, name: String.to_atom(gameCode))
+    GenServer.start_link(__MODULE__, playerName, name: String.to_atom(gameCode))
   end
 
   #cast used to send synchronous request. The problem could be that some feature aren't instantiated yet before used...
@@ -41,38 +41,28 @@ defmodule Loupgarou.GameLogic.GameProcess do
   # statusDatabase : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
 
   @impl true
-  def init({playerName, game_code}) do
+  def init(playerName) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playerName, :unknown, :alive])
     # Process.register(pid, host)
     initial_statusDatabase = %{
       players: %{playerName=>pid},
-      phase: :waiting, # or day or Night
-      gamecode: game_code
+      phase: :waiting # or day or Night
       }
 
     IO.puts("GenServer initialized ") # get pid to track which gameProcess has be initialized??
     {:ok, initial_statusDatabase}
   end
 
-  # broadcast functions to the live views (of the player list)
-  defp broadcast(game_code, message) do
-    Phoenix.PubSub.broadcast(LoupgarouWeb.PubSub, "game:#{game_code}", message)
-  end
-
-
 # just does stuff with no reply
-@impl true
-def handle_cast({:addPlayer, newPlayer}, statusDatabase) do
-  pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [newPlayer, :unknown, :alive])
-  players = Map.put(statusDatabase.players, newPlayer, pid)
-  newstatusDatabase = %{statusDatabase| players: players}
-  # broadcast the new player event to the live views so they can update
-  broadcast(statusDatabase.gamecode, {:player_joined, newPlayer})
-
-  IO.puts("new player has been added")
-  {:noreply, newstatusDatabase}
-end
-
+  @impl true
+  def handle_cast({:addPlayer, newPlayer}, statusDatabase) do
+    pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [newPlayer, :unknown, :alive])
+    # Process.register(pid, newPlayer)
+    players = Map.put(statusDatabase.players, newPlayer, pid)
+    newstatusDatabase = %{statusDatabase| players: players}
+    IO.puts("new player has been added")
+    {:noreply, newstatusDatabase}
+  end
 
 # replies to a request
   @impl true
