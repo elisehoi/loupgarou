@@ -3,6 +3,7 @@
 # Marta
 ## Done
 ## Todo
+- as the master start the game, use a broadcast message to show roles also to the other players
 
 # YingYing
 ## Done
