@@ -20,10 +20,13 @@
     - use phoenix live views instead of html
     - fix errors with phoenix live view
 - make sure all players are redirected to the game when it starts
+- convert html pages of latest Yingying push to live view
+- Make the voting system in live view
+
 
 
 ## Todo
-- convert html pages of latest Yingying push to live view
+- fund why on earth it says game room does not exist
 - make the game Pretty
 - disallow players for usign the same name
     - tried to do it but not working, not top priority

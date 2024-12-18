@@ -50,9 +50,22 @@ defmodule LoupgarouWeb.WolfNightLive do
      )}
   end
 
-  # Replace this function with your logic to get non-wolf players
-  defp get_non_wolf_players(_code) do
-    # This is placeholder logic. Replace it with actual code to fetch non-wolf players.
-    ["Player1", "Player2", "Player3"]
+
+  defp get_non_wolf_players(code) do
+    players = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+
+  #for name in players
+    |> Enum.reduce([], fn {name, _pid}, not_werewolves ->
+      role = Loupgarou.GameLogic.GameProcess.getRole(name, code)
+
+    #  if role is not :Werewolf
+    if role != :Werewolf do
+        #  add to a not werewolf list
+        [name | not_werewolves]
+      else
+        not_werewolves
+      end
+    end)
   end
+
 end

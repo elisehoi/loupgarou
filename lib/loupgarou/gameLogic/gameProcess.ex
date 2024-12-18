@@ -184,7 +184,7 @@ end
         {:replyDead, :ok} ->
           newPlayers = Map.delete(statusDatabase.players, playerName)
           updatedDatabase = Map.put(statusDatabase, :players, newPlayers)
-          {:reply, :ok, statusDatabase}
+          {:reply, :ok, updatedDatabase}
         after
         2000 -> {:reply, "Timeout while killing player #{playerName}", statusDatabase}
       end
