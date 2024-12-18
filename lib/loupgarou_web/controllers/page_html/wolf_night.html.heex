@@ -1,2 +1,17 @@
-<p><img src="https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.freepik.com%2Fpremium-photo%2Fvampires-werewolves-howling-moon-with-happy-halloween-backdrop_1042793-16813.jpg&amp;tbnid=jOokLNxiYbYUEM&amp;vet=10CAQQxiAoBWoXChMIuICWwbetigMVAAAAAB0AAAAAEBs..i&amp;imgrefurl=https%3A%2F%2Fwww.freepik.com%2Fpremium-ai-image%2Fvampires-werewolves-howling-moon-with-happy-halloween-backdrop_353137703.htm&amp;docid=mSAowv5uLV1j0M&amp;w=626&amp;h=417&amp;itg=1&amp;q=halloween%20moon%20pinterest&amp;ved=0CAQQxiAoBWoXChMIuICWwbetigMVAAAAAB0AAAAAEBs" alt="lupi" width="353" height="167" /></p>
+<div class="role-container">
+<h1>It's night time and the Wolfs are waking up... </h1>
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWPu1_hvNpM4hFMKaNHDByA5iT8Dgf1rI2gPfK-xkVNM63A0yGOTuu8dIhYXDx_PAjMR8&usqp=CAU" alt="lupi" width="353" height="167" alt="Trulli" >
 <p>you wake up thirsty of blood, who will be your meal tonight?</p>
+
+<!-- for each not Wolf player it creates a button with their name--> 
+<%= for playerName <- @notWolf do %>
+    <button class="clickable-button" type="button" onclick={"redirectToVote('#{@code}', '#{@name}', #{playerName})"}><%= playerName %></button>
+  <% end %>
+</div>
+
+<script>
+    function redirectToVote(code, playerName, victim){
+      window.location.href = '/count_vote/' + code + '/' + playerName + '/' + victim
+    }
+  </script>
+

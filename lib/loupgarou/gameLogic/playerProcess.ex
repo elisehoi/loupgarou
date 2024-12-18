@@ -3,20 +3,19 @@ defmodule Loupgarou.GameLogic.PlayerProcess do
 
   def loop(name, role, status) do
     receive do
-      {:setRole, newRole} -> IO.inspect("received new Role")
-                            loop(name, newRole, status)
+      {:setRole, newRole, from} -> IO.inspect("#{name} has received new Role #{newRole}")
+                                   send(from, {:replySetRole})
+                                  loop(name, newRole, status)
 
 
       {:getRole, from} -> send(from, {:replyRole, role})
+                          loop(name, role, status)
 
-      {:sleep} -> IO.puts("sleeping")
+      {:setStatus, newStatus} -> IO.inspect("#{name} hast received new State: #{newStatus}" )
+                                 loop(name, role, newStatus)
 
-      {:wolfWakeUp} when role == :wolf -> IO.puts("wake up")
-
-      {:wakeUp} -> IO.puts("waking up")
-
-      {:vote} -> IO.puts("voting")
-      # send to GameProcess my vote
+      {:getStatus, from} -> send(from, {:replyStatus, status})
+                            loop(name, role, status)
 
       {:dead} -> IO.puts("#{name} is dead")
                  Process.exit(self(), :normal)

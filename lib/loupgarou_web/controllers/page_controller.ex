@@ -69,36 +69,36 @@ end
 
   #TODO: Consider to create setRole, ... function in the GameProcess for consistency. Or maybe remove getRole, by sending the message directly to the playerProcess and add a reveice block here.
   def distribute_role(conn, %{"code" => code, "name" => name}) do
-    IO.inspect("the code is:#{code}")
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    IO.inspect(playerMap)
     nbOfPlayers = map_size(playerMap)
     # ration between villlagers and werewolf = 1 to 3. => 1 Wolf = 3 Villagers
     nbOfWolf = round(nbOfPlayers/3)
 
+    IO.inspect("the amount of player is is:#{nbOfPlayers}")
 
     # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
-    # TODO: check that this work with nbOfWolf == 1
+    # TODO: This always generate at least one werewolf
      Enum.each(1..nbOfWolf, fn _i ->
-      {_playerName, pid}= Enum.random(Map.to_list(playerMap))
-      send(pid, {:setRole, :Werewolf})
-    end)
-    # TODO: Maybe add receive block to make sure that the player process has received the message (via gameProcess?)
-    # Set the process to sleep to make sure that all the werewolf players received their role before continuing
-    Process.sleep(2000)
-
-
-    # If player's role == :unknown, then the role :Villager is assign to this player.
-    Enum.each(playerMap, fn {playerName, pid} ->
-      role = Loupgarou.GameLogic.GameProcess.getRole(playerName, code)
-      if(role == :unknown) do
-        send(pid,{:setRole, :Villager})
+      {playerName, _pid}= Enum.random(Map.to_list(playerMap))
+      case Loupgarou.GameLogic.GameProcess.setRole(playerName, code, :Werewolf) do
+        :error -> IO.inspect("There's a problem with setting role to Wolf")
+        :ok -> nil
       end
     end)
 
-    Process.sleep(2000)
+    # If player's role == :unknown, then the role :Villager is assign to this player.
+    Enum.each(playerMap, fn {playerName, _pid} ->
+      role = Loupgarou.GameLogic.GameProcess.getRole(playerName, code)
+      if(role == :unknown) do
+        case Loupgarou.GameLogic.GameProcess.setRole(playerName, code, :Villager) do
+          :error -> IO.inspect("There's a problem with setting role to villager")
+          :ok -> nil
+        end
+      end
+    end)
 
     redirect(conn, to: "/show_role/" <> code <> "/" <> name)
-    #render(conn, "role_distribution.html", code: code, name: name)
   end
 
   def show_role(conn, %{"code" => code, "name" => name}) do
@@ -108,8 +108,30 @@ end
     else
       render(conn, "villager_role.html", code: code, name: name)
     end
+  end
+
+  def night_time(conn, %{"code" => code, "name" => name}) do
+    role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
+    if(role== :Werewolf) do
+      playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+      list_of_not_wolves =
+      for {playerName, _pid} <- playerMap,
+        Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
+
+      render(conn, "wolf_night.html", code: code, name: name, notWolf: list_of_not_wolves)
+    else
+      render(conn, "night.html", code: code, name: name)
+    end
+  end
+
+  def count_vote(_conn, %{"code" => code, "name" => name, "victim" => victim}) do
+    IO.inspect("#{name} Voted for: #{victim} in game: #{code}")
+    Loupgarou.GameLogic.GameProcess.add_vote(victim, code)
 
 
+
+
+    # TODO store the vote in the database, and add functions to access it. also add functions to clear when voting is over.
   end
 
 

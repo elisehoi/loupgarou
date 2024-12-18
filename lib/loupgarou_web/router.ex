@@ -27,8 +27,8 @@ defmodule LoupgarouWeb.Router do
     get "/:code/:name/waiting_room_player", PageController, :waiting_room_player
     get "/role_distribution/:code/:name", PageController, :distribute_role
     get "/show_role/:code/:name", PageController, :show_role
-
-
+    get "/night_time/:code/:name", PageController, :night_time
+    get "/count_vote/:code/:name/:victim", PageController, :count_vote
 
   end
 
