@@ -143,9 +143,9 @@ end
       Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
       render(conn, "dead.html")
     end
-
-
   end
+
+  
 
 
 
