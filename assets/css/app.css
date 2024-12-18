@@ -34,21 +34,63 @@
     background-color: #0056b3;
   }
 
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center; /* Center the text inside elements */
+    /*background-color: #851e22 !important; */
+    background-size: cover;
+    background-image: url("../../priv/static/images/bg-loading-screen.png") !important;
+  }
+
+  .cap-main-page{
+    font-family: Apple Chancery, cursive;
+    font-weight:400;
+    font-style: italic;
+    font-size: 55px;
+    color: #252531; /*  text color*/
+
+  }
+  .title-main-page{
+    font-family: Bookman, URW Bookman L, serif ;
+    font-style: italic;
+    font-size: 32px;
+    color: #252531; /*  text color*/
+
+  }
+  .title2-main-page{
+    font-family: Bookman, URW Bookman L, serif ;
+    font-size: 24px;
+    color: #252531; /*  text color*/
+
+  }
+  .text-input-field{
+    width: 20%; 
+    padding: 10px; 
+    font-size: 18px;
+    font-family: Apple Chancery, cursive;
+    background-color: #f7f4ea;
+    color: rgb(46, 46, 46); /*  text color*/
+  }
   .clickable-button {
-  background-color: #4CAF50; /* Green background */
-  color: white; /* White text */
-  border: none; /* Remove default border */
-  padding: 10px 20px; /* Add padding */
-  text-align: center; /* Center the text */
-  text-decoration: none; /* Remove underline */
-  display: inline-block; /* Make it inline */
-  font-size: 16px; /* Set font size */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease; /* Smooth hover transition */
+  background-color: #252531;
+  color: white; /*  text color*/
+  border: none; 
+  padding: 8px 18px; /* Add padding */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-family: Apple Chancery, cursive;
+  font-weight: bold;
+  font-size: 18px; 
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer; 
+  transition: background-color 0.3s ease; 
 }
 
 .clickable-button:hover {
-  background-color: #45a049; /* Slightly darker green on hover */
+  background-color: #000000;
 }
   

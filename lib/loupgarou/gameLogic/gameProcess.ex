@@ -3,7 +3,6 @@ defmodule Loupgarou.GameLogic.GameProcess do
   use GenServer
 
   def start(playerName, gameCode) do
-    IO.puts("START RECEIVED")
     # The gameCode is assigned as the name for the gameProcess. This GameProcess can then be called via this gameCode
     GenServer.start_link(__MODULE__, {playerName, gameCode}, name: String.to_atom(gameCode))
   end
@@ -80,13 +79,9 @@ defmodule Loupgarou.GameLogic.GameProcess do
       phase: :waiting, # or day or Night
       votes: %{playerName => 0},
       expectedVoteWolf: 0,
-<<<<<<< HEAD
       expectedVote: 0,
-      gamecode: game_code
-=======
       gamecode: game_code,
       clickedPlayers: 0
->>>>>>> 9b609694e21e323cc46329ddd17d06a0acac8a7a
       }
 
       {:ok, initial_statusDatabase}
@@ -185,13 +180,6 @@ end
     {:reply, :ok, updatedDB}
   end
 
-<<<<<<< HEAD
-
-  #@impl
-  #def handle_call({:getExpectedVoteWolf}, _from, statusDatabase) do
-   # {:reply, statusDatabase.expectedVoteWolf, statusDatabase}
-  #end
-=======
   @impl true
   def handle_call({:getClickedPlayers}, _from, statusDatabase) do
     {:reply, statusDatabase.clickedPlayers, statusDatabase}
@@ -205,13 +193,11 @@ end
     end
 
   def handle_cast({:incrementClickedPlayers}, statusDatabase) do
-    IO.puts("INCREASED THE NUMBER OF CLICKED PLAYERS TO:")
     updatedClickedPlayers = statusDatabase.clickedPlayers + 1
     IO.puts(updatedClickedPlayers)
     updatedDatabase = %{statusDatabase | clickedPlayers: updatedClickedPlayers}
     {:noreply, updatedDatabase}
   end
->>>>>>> 9b609694e21e323cc46329ddd17d06a0acac8a7a
 
   @impl
   def handle_call({:killPlayer, playerName}, _from, statusDatabase) do
