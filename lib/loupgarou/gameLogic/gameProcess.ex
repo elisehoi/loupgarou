@@ -3,8 +3,9 @@ defmodule Loupgarou.GameLogic.GameProcess do
   use GenServer
 
   def start(playerName, gameCode) do
+    IO.puts("START RECEIVED")
     # The gameCode is assigned as the name for the gameProcess. This GameProcess can then be called via this gameCode
-    GenServer.start_link(__MODULE__, playerName, name: String.to_atom(gameCode))
+    GenServer.start_link(__MODULE__, {playerName, gameCode}, name: String.to_atom(gameCode))
   end
 
   #cast used to send synchronous request. The problem could be that some feature aren't instantiated yet before used...
@@ -52,6 +53,8 @@ defmodule Loupgarou.GameLogic.GameProcess do
   @impl true
   def init({playerName, game_code}) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playerName, :unknown, :alive])
+    IO.puts("THE PIIIIID IS THE FOLLOWING")
+    IO.inspect(pid)
     initial_statusDatabase = %{
       players: %{playerName=>pid},
       phase: :waiting, # or day or Night
@@ -59,6 +62,8 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
       gamecode: game_code
       }
+    IO.puts("STATUS DB IN PROCESS INIT")
+    IO.inspect(initial_statusDatabase)
     {:ok, initial_statusDatabase}
   end
 

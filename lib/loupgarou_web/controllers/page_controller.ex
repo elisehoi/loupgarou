@@ -18,7 +18,17 @@ defmodule LoupgarouWeb.PageController do
 
 # create game room using the access code, redirect to a new page with the access code as URL
   def create_game_room(conn, %{"name" => name}) do
+    IO.puts("CREATE GAME ROOM RUNNING")
+    IO.puts("CODE:")
+
     code = generate_access_code()
+    IO.inspect(code)
+    IO.puts("CONN:")
+
+    IO.inspect(conn)
+    IO.puts("NAME:")
+
+    IO.inspect(name)
 
   case Loupgarou.GameLogic.GameProcess.start(name, code) do
     {:ok, _pid} ->
