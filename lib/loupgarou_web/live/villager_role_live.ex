@@ -26,7 +26,52 @@ defmodule LoupgarouWeb.VillagerRoleLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="role-container">
+    <style>
+      /* Background and container styling */
+      .role-container {
+        background-image: url('https://images7.alphacoders.com/128/1288361.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      /* White transparent background box for content */
+      .content-box {
+        background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 800px;
+        width: 100%;
+        text-align: center;
+      }
+
+      /* Text styling */
+      h1, h2, p {
+        color: #333; /* Dark text for better readability */
+      }
+
+      /* Button styling */
+      .clickable-button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50; /* Button color */
+        color: white;
+      }
+
+      .clickable-button:hover {
+        background-color: #45a049;
+      }
+    </style>
+    <div class="role-container">$
+      <div class="content-box">
       <h1>Your role is...</h1>
       <img
         src="https://images.vexels.com/media/users/3/128325/isolated/preview/0f52205b21536ca0dbbdac51891348e0-old-farmer-cartoon.png"
@@ -50,6 +95,7 @@ defmodule LoupgarouWeb.VillagerRoleLive do
       </button>
 
       <p>Players Ready: <%= @clicked_players %> / <%= @total_players %></p>
+    </div>
     </div>
     """
   end
