@@ -1,4 +1,4 @@
-defmodule LoupgarouWeb.Router do
+defmodule LoupgarouWeb.RouterOGcopy do
   use LoupgarouWeb, :router
 
 
@@ -22,14 +22,13 @@ defmodule LoupgarouWeb.Router do
     ## Author Elise Nov 29 11:59 AM
     # Create game room
     get "/create_game_room/:name", PageController, :create_game_room
-    live "/:code/:name/waiting_room_master_live", WaitingRoomMasterLive
+    get "/:code/:name/waiting_room_master", PageController, :waiting_room_master # Dynamic route for game rooms
     get "/join_game_room/", PageController, :join_game_room
-    live "/:code/:name/waiting_room_player_live", WaitingRoomPlayerLive
+    get "/:code/:name/waiting_room_player", PageController, :waiting_room_player
     get "/role_distribution/:code/:name", PageController, :distribute_role
     get "/show_role/:code/:name", PageController, :show_role
     get "/check_player_name/:code/:name", PageController, :check_player_name
-    get "/night_time/:code/:name", PageController, :night_time
-    get "/count_vote/:code/:name/:victim", PageController, :count_vote
+
 
   end
 

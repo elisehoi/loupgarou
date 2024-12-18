@@ -18,7 +18,7 @@ config :loupgarou, LoupgarouWeb.Endpoint,
     formats: [html: LoupgarouWeb.ErrorHTML, json: LoupgarouWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Loupgarou.PubSub,
+  pubsub_server: LoupgarouWeb.PubSub,
   live_view: [signing_salt: "SwwTkik3"]
 
 # Configures the mailer

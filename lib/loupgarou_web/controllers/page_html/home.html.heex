@@ -34,39 +34,40 @@
 
 
 
-        function redirectToExistingGame() {
-            const name = getName();
-            const gameCode = getGameCodeInput();
-            if (name == '' ) {
-                alert('Please enter your name!');
-                return;
+    function redirectToExistingGame() {
+    const name = getName();
+    const gameCode = getGameCodeInput();
+
+    if (name === '') {
+        alert('Please enter your name!');
+        return;
+    }
+
+    if (!gameCode) {
+        alert('Please enter a valid game code!');
+        return;
+    }
+
+    console.log('Checking if game room exists for code:', gameCode);
+
+    // check if the name is already taken
+    fetch(`/check_player_name/${encodeURIComponent(gameCode)}/${encodeURIComponent(name)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.exists) {
+                alert('This name is already in use! Please choose a different name.');
+            } else if (data.error) {
+                alert(data.error);
+            } else {
+                window.location.href = `/join_game_room/?code=${encodeURIComponent(gameCode)}&name=${encodeURIComponent(name)}`;
             }
+        })
+        .catch(error => {
+            console.error('Error validating name:', error);
+            alert('An error occurred while validating the name. Please try again.');
+        });
+}
 
-            if (!gameCode) {
-                alert('Please enter a valid game code!');
-                return;
-            }
-
-        console.log('Checking if game room exists for code:', gameCode);
-
-        // TODO LISE MAKE SURE THAT GENERATING A NEW ROOM BY ENTERNING A RANDOM CODE DOES NOT WORK
-        // Make a request to the server to check if the room exists
-
-        //fetch(`/join_game_room/${encodeURIComponent(gameCode)}`)
-        //    .then(response => {
-        //        if (response.ok) {
-        //            console.log('Room exists, redirecting...');
-                    window.location.href = `/join_game_room/?code=${encodeURIComponent(gameCode)}&name=${encodeURIComponent(name)}`;
-        //        } else {
-                    // TODO this part can be removed? There's a method that creates a new room if the code doesn't exist....
-        //            alert('The game room with the provided code does not exist!');
-        //        }
-        //    })
-        //    .catch(error => {
-        //        console.error('Error checking game room:', error);
-        //        alert('An error occurred while checking the game room. Please try again.');
-        //    });
-        }
 
     </script>
 

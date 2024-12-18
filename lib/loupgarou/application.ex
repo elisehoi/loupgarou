@@ -10,7 +10,7 @@ defmodule Loupgarou.Application do
     children = [
       LoupgarouWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:loupgarou, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: Loupgarou.PubSub},
+      {Phoenix.PubSub, name: LoupgarouWeb.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Loupgarou.Finch},
       # Start a worker by calling: Loupgarou.Worker.start_link(arg)
