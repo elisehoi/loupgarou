@@ -115,6 +115,7 @@ end
   end
 
   def night_time(conn, %{"code" => code, "name" => name}) do
+    Loupgarou.GameLogic.GameProcess.resetVote(code)
     role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
     IO.puts("here we ARRREE 1")
     if(role== :Werewolf) do
@@ -126,7 +127,6 @@ end
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
         IO.puts("here we ARRREE 3")
         redirect(conn, to: "/#{code}/#{name}/wolf_night_live")
-      #render(conn, "wolf_night.html", code: code, name: name, notWolf: list_of_not_wolves)
     else
       redirect(conn, to: "/#{code}/#{name}/night_live")
       #render(conn, "night.html", code: code, name: name)
@@ -134,6 +134,18 @@ end
   end
 
 
+  def count_vote(conn, %{"code" => code, "name" => name, "victim" => victim}) do
+    IO.inspect("#{name} Voted for: #{victim} in game: #{code}")
+    Loupgarou.GameLogic.GameProcess.add_vote(victim, code)
+    statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
+    if(statusDB.expectedVoteWolf== 0) do
+      {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
+      Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
+      render(conn, "dead.html")
+    end
+
+
+  end
 
 
 

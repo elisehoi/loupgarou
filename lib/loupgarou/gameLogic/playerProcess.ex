@@ -17,7 +17,8 @@ defmodule Loupgarou.GameLogic.PlayerProcess do
       {:getStatus, from} -> send(from, {:replyStatus, status})
                             loop(name, role, status)
 
-      {:dead} -> IO.puts("#{name} is dead")
+      {:dead, from} -> IO.puts("#{name} is dead")
+                 send(from, {:replyDead, :ok})
                  Process.exit(self(), :normal)
 
     end
