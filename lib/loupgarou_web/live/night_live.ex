@@ -17,7 +17,7 @@ defmodule LoupgarouWeb.NightLive do
     <div class="night-live">
       <h2>Sleeping....<%= @name %></h2>
       <h2>
-        The day is over, it's time for rest. Enjoy your sleep. Who knows...
+        The day is over, it's time to rest. Enjoy your sleep. Who knows...
         it may be your last one.
       </h2>
     </div>
