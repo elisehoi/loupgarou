@@ -43,8 +43,17 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:getRole, playerName})
   end
 
+  def resetVote(code) do
+    GenServer.call(String.to_atom(code), {:resetVote})
+  end
 
+ # def getExpectedVoteWolf(code) do
+  #  GenServer.call(String.to_atom(code), {:getExpectedVoteWolf})
+  #end
 
+  def killPlayer(playerName, code) do
+    GenServer.call(String.to_atom(code), {:killPlayer, playerName})
+  end
 
 
 
@@ -59,7 +68,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
       players: %{playerName=>pid},
       phase: :waiting, # or day or Night
       votes: %{playerName => 0},
-
+      expectedVoteWolf: 0,
       gamecode: game_code
       }
     IO.puts("STATUS DB IN PROCESS INIT")
@@ -79,22 +88,26 @@ def handle_cast({:addPlayer, newPlayer}, statusDatabase) do
   pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [newPlayer, :unknown, :alive])
   players = Map.put(statusDatabase.players, newPlayer, pid)
   updatedDatabase = %{statusDatabase| players: players}
+  votes = Map.put(statusDatabase.votes, newPlayer, 0)
+  newstatusDatabase = %{updatedDatabase| votes: votes}
+
   # broadcast the new player event to the live views so they can update
   broadcast(statusDatabase.gamecode, {:player_joined, newPlayer})
 
-    votes = Map.put(statusDatabase.votes, newPlayer, 0)
-    newstatusDatabase = %{updatedDatabase| votes: votes}
   IO.puts("new player has been added")
   {:noreply, newstatusDatabase}
 end
 
   @impl true
   def handle_cast({:addVote, victim}, statusDatabase) do
-    vote = Map.fetch(statusDatabase.votes, victim)
-    vote1 = vote+1
-    votes = Map.put(statusDatabase.votes, victim, vote1)
-    newDatabase = %{statusDatabase| votes: votes}
-    IO.inspect("#{victim} has now #{vote+1} votes" )
+    currentVoteCount = Map.get(statusDatabase.votes, victim, 0)
+    updatedVotes = Map.put(statusDatabase.votes, victim, currentVoteCount + 1)
+    updatedDatabase = %{statusDatabase | votes: updatedVotes}
+
+    currentExpectedVote = Map.get(updatedDatabase, :expectedVoteWolf, 0)
+    newDatabase = %{updatedDatabase | expectedVoteWolf: currentExpectedVote - 1}
+
+    IO.inspect("#{victim} has now #{currentVoteCount+1} votes" )
     {:noreply, newDatabase}
   end
 
@@ -141,6 +154,45 @@ end
     end
   end
 
+  @impl true
+  def handle_call({:resetVote}, _from, statusDatabase) do
+    newVoteDatabase = Map.new(statusDatabase.votes, fn {player_name, _count} ->
+      {player_name, 0}
+    end)
+
+    updatedStatusDatabase =
+      statusDatabase
+      |> Map.put(:votes, newVoteDatabase)
+
+    nbOfPlayers = map_size(statusDatabase.players)
+    nbOfWolf = round(nbOfPlayers/3)
+    updatedStatusDatabase =
+      Map.put(updatedStatusDatabase, :expectedVoteWolf, nbOfWolf)
+
+    {:reply, :ok, updatedStatusDatabase}
+  end
+
+  #@impl
+  #def handle_call({:getExpectedVoteWolf}, _from, statusDatabase) do
+   # {:reply, statusDatabase.expectedVoteWolf, statusDatabase}
+  #end
+
+  @impl
+  def handle_call({:killPlayer, playerName}, _from, statusDatabase) do
+
+    case Map.get(statusDatabase.players, playerName, nil) do
+      nil -> {:reply, "The player doesn't exist", statusDatabase}
+      pid -> send(pid, {:dead, self()})
+      receive do
+        {:replyDead, :ok} ->
+          newPlayers = Map.delete(statusDatabase.players, playerName)
+          updatedDatabase = Map.put(statusDatabase, :players, newPlayers)
+          {:reply, :ok, statusDatabase}
+        after
+        2000 -> {:reply, "Timeout while killing player #{playerName}", statusDatabase}
+      end
+    end
+  end
 
 
 end
