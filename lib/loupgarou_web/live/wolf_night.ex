@@ -16,7 +16,53 @@ defmodule LoupgarouWeb.WolfNightLive do
   @impl true
   def render(assigns) do
     ~H"""
+     <style>
+    /* Background and container styling */
+    .role-container {
+      background-image: url('https://media.istockphoto.com/id/1466669509/vector/night-starry-sky-with-full-moon-and-cloud-vector-background-with-cloudy-sky-moonlight.jpg?s=612x612&w=0&k=20&c=pZqh5rjgNcHq4lubXOG2chsXWChW-74GMd_JGfy6zVo=');
+      background-size: cover;
+      background-position: center;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* White transparent background box for content */
+    .content-box {
+      background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Text styling */
+    h1, p {
+      color: #333; /* Dark text for better readability */
+    }
+
+    /* Button styling */
+    .clickable-button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50; /* Button color */
+      color: white;
+    }
+
+    .clickable-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+
     <div class="role-container">
+       <div class="content-box">
       <h1>It's night time and the Wolves are waking up...</h1>
       <img
         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWPu1_hvNpM4hFMKaNHDByA5iT8Dgf1rI2gPfK-xkVNM63A0yGOTuu8dIhYXDx_PAjMR8&usqp=CAU"
@@ -24,7 +70,7 @@ defmodule LoupgarouWeb.WolfNightLive do
         width="353"
         height="167"
       />
-      <p>You wake up thirsty for blood, who will be your meal tonight?</p>
+      <p>You wake up thirsty for blood. Who will be your victim tonight?</p>
 
       <!-- Loop through non-wolf players to create buttons -->
       <%= for player_name <- @notWolf do %>
@@ -36,6 +82,7 @@ defmodule LoupgarouWeb.WolfNightLive do
           <%= player_name %>
         </button>
       <% end %>
+      </div>
     </div>
     """
   end

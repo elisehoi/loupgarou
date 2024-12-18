@@ -131,14 +131,18 @@ end
     role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
     if(role== :Werewolf) do
       playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+<<<<<<< HEAD
 
       for {playerName, _pid} <- playerMap,
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
 
+=======
+      for {playerName, _pid} <- playerMap,
+        Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
+>>>>>>> 9b609694e21e323cc46329ddd17d06a0acac8a7a
         redirect(conn, to: "/#{code}/#{name}/wolf_night_live")
     else
       redirect(conn, to: "/#{code}/#{name}/night_live")
-      #render(conn, "night.html", code: code, name: name)
     end
   end
 

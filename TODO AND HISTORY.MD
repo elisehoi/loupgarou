@@ -2,6 +2,8 @@
 
 # Marta
 ## Done
+- get rid of the phoenix header
+
 ## Todo
 - as the master start the game, use a broadcast message to show roles also to the other players
 
@@ -26,7 +28,9 @@
 
 
 ## Todo
-- fund why on earth it says game room does not exist
+- brodcast when a player is getting ready to enter a new page
+
+- find why on earth it says game room does not exist
 - make the game Pretty
 - disallow players for usign the same name
     - tried to do it but not working, not top priority
