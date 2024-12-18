@@ -54,6 +54,7 @@ defmodule LoupgarouWeb.WaitingRoomMasterLive do
     <p>Your game with the game code: <strong><%= @code %></strong> will start as soon as you wish.</p>
     <br>
     <p>Players online:</p>
+    <br>
     <ul style="list-style-type: disc; margin-left: 20px;">
       <%= for {player_name, _pid} <- @player_map do %>
         <li style="margin-bottom: 5px;"><%= player_name %></li>

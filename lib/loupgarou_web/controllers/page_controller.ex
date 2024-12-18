@@ -117,17 +117,13 @@ end
   def night_time(conn, %{"code" => code, "name" => name}) do
     Loupgarou.GameLogic.GameProcess.resetVote(code)
     role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
-    IO.puts("here we ARRREE 1")
     if(role== :Werewolf) do
       playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
-      IO.puts("here we ARRREE 2")
       for {playerName, _pid} <- playerMap,
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
-        IO.puts("here we ARRREE 3")
         redirect(conn, to: "/#{code}/#{name}/wolf_night_live")
     else
       redirect(conn, to: "/#{code}/#{name}/night_live")
-      #render(conn, "night.html", code: code, name: name)
     end
   end
 

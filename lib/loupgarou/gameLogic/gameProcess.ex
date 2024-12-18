@@ -35,6 +35,10 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:getPlayerMap})
   end
 
+  def getPlayerCount(code) do
+    map_size(getPlayerMap(code))
+  end
+
   def setRole(playerName, code, newRole) do
     GenServer.call(String.to_atom(code), {:setRole, playerName, newRole})
   end
@@ -47,15 +51,23 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:resetVote})
   end
 
- # def getExpectedVoteWolf(code) do
-  #  GenServer.call(String.to_atom(code), {:getExpectedVoteWolf})
-  #end
+
 
   def killPlayer(playerName, code) do
     GenServer.call(String.to_atom(code), {:killPlayer, playerName})
   end
 
+  # Increment the click count on buttons that require all players to click on
+  def increment_clicked_players(code) do
+    GenServer.cast(String.to_atom(code), {:incrementClickedPlayers})
+  end
 
+  def reset_clicked_players(code) do
+    GenServer.cast(String.to_atom(code), {:resetClickedPlayers})
+  end
+  def get_clicked_players(code) do
+    GenServer.call(String.to_atom(code), {:getClickedPlayers}, 15_000)
+  end
 
   # loop: same as while go on robot loop but for the player processes (handles messages)
   # statusDatabase : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
@@ -68,9 +80,11 @@ defmodule Loupgarou.GameLogic.GameProcess do
       phase: :waiting, # or day or Night
       votes: %{playerName => 0},
       expectedVoteWolf: 0,
-      gamecode: game_code
+      gamecode: game_code,
+      clickedPlayers: 0
       }
-    {:ok, initial_statusDatabase}
+
+      {:ok, initial_statusDatabase}
   end
 
   # broadcast functions to the live views (of the player list)
@@ -169,10 +183,25 @@ end
     {:reply, :ok, updatedStatusDatabase}
   end
 
-  #@impl
-  #def handle_call({:getExpectedVoteWolf}, _from, statusDatabase) do
-   # {:reply, statusDatabase.expectedVoteWolf, statusDatabase}
-  #end
+  @impl true
+  def handle_call({:getClickedPlayers}, _from, statusDatabase) do
+    {:reply, statusDatabase.clickedPlayers, statusDatabase}
+    end
+
+    @impl true
+    def handle_cast({:resetClickedPlayers}, statusDatabase) do
+      updatedClickedPlayers = 0
+      updatedDatabase = %{statusDatabase | clickedPlayers: updatedClickedPlayers}
+      {:noreply, updatedDatabase}
+    end
+
+  def handle_cast({:incrementClickedPlayers}, statusDatabase) do
+    IO.puts("INCREASED THE NUMBER OF CLICKED PLAYERS TO:")
+    updatedClickedPlayers = statusDatabase.clickedPlayers + 1
+    IO.puts(updatedClickedPlayers)
+    updatedDatabase = %{statusDatabase | clickedPlayers: updatedClickedPlayers}
+    {:noreply, updatedDatabase}
+  end
 
   @impl
   def handle_call({:killPlayer, playerName}, _from, statusDatabase) do
