@@ -29,6 +29,10 @@ defmodule LoupgarouWeb.Router do
     get "/show_role/:code/:name", PageController, :show_role
     get "/check_player_name/:code/:name", PageController, :check_player_name
     get "/night_time/:code/:name", PageController, :night_time
+    live "/:code/:name/night_live", NightLive
+    live "/:code/:name/villager_role_live", VillagerRoleLive
+    live "/:code/:name/wolf_role_live", WolfRoleLive
+    live "/:code/:name/wolf_night_live", WolfNightLive
     get "/count_vote/:code/:name/:victim", PageController, :count_vote
 
   end

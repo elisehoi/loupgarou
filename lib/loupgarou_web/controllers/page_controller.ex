@@ -18,17 +18,8 @@ defmodule LoupgarouWeb.PageController do
 
 # create game room using the access code, redirect to a new page with the access code as URL
   def create_game_room(conn, %{"name" => name}) do
-    IO.puts("CREATE GAME ROOM RUNNING")
-    IO.puts("CODE:")
 
     code = generate_access_code()
-    IO.inspect(code)
-    IO.puts("CONN:")
-
-    IO.inspect(conn)
-    IO.puts("NAME:")
-
-    IO.inspect(name)
 
   case Loupgarou.GameLogic.GameProcess.start(name, code) do
     {:ok, _pid} ->
@@ -115,23 +106,30 @@ end
   def show_role(conn, %{"code" => code, "name" => name}) do
     role = Loupgarou.GameLogic.GameProcess.getRole(name, code)
     if(role == :Werewolf) do
-      render(conn, "wolf_role.html", code: code, name: name)
+      redirect(conn, to: "/#{code}/#{name}/wolf_role_live")
+      #render(conn, "wolf_role.html", code: code, name: name)
     else
-      render(conn, "villager_role.html", code: code, name: name)
+      redirect(conn, to: "/#{code}/#{name}/villager_role_live")
+      #render(conn, "villager_role.html", code: code, name: name)
     end
   end
 
   def night_time(conn, %{"code" => code, "name" => name}) do
     role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
+    IO.puts("here we ARRREE 1")
     if(role== :Werewolf) do
       playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+      IO.puts("here we ARRREE 2")
+
       list_of_not_wolves =
       for {playerName, _pid} <- playerMap,
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
-
-      render(conn, "wolf_night.html", code: code, name: name, notWolf: list_of_not_wolves)
+        IO.puts("here we ARRREE 3")
+        redirect(conn, to: "/#{code}/#{name}/wolf_night_live")
+      #render(conn, "wolf_night.html", code: code, name: name, notWolf: list_of_not_wolves)
     else
-      render(conn, "night.html", code: code, name: name)
+      redirect(conn, to: "/#{code}/#{name}/night_live")
+      #render(conn, "night.html", code: code, name: name)
     end
   end
 

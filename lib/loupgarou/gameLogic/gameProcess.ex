@@ -53,8 +53,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
   @impl true
   def init({playerName, game_code}) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playerName, :unknown, :alive])
-    IO.puts("THE PIIIIID IS THE FOLLOWING")
-    IO.inspect(pid)
+
     initial_statusDatabase = %{
       players: %{playerName=>pid},
       phase: :waiting, # or day or Night
@@ -62,8 +61,6 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
       gamecode: game_code
       }
-    IO.puts("STATUS DB IN PROCESS INIT")
-    IO.inspect(initial_statusDatabase)
     {:ok, initial_statusDatabase}
   end
 
