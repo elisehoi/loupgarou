@@ -121,8 +121,6 @@ end
     if(role== :Werewolf) do
       playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
       IO.puts("here we ARRREE 2")
-
-      list_of_not_wolves =
       for {playerName, _pid} <- playerMap,
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
         IO.puts("here we ARRREE 3")
@@ -141,11 +139,16 @@ end
     if(statusDB.expectedVoteWolf== 0) do
       {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
       Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
-      render(conn, "dead.html")
+      render(conn, "dead.html", dead: playerName, code: code, name: name)
     end
   end
 
-  
+  def voteDay(conn, %{"code" => code, "name" => name}) do
+    playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    render(conn, "voteDay.html", code: code, name: name, playerMap: playerMap)
+  end
+
+
 
 
 

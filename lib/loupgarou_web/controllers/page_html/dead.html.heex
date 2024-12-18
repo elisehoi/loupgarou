@@ -1,1 +1,17 @@
-<h1> yes you're dead</h1>
+
+<div class="role-container">
+  <h1>Morning arrives, and everyone wakes up. Everyone, except ...</h1>
+  <img src="https://t3.ftcdn.net/jpg/01/76/52/20/360_F_176522043_NBVB7bJTHStrqG3ONiM7QpExAz2mDAUR.jpg" alt="Trulli">
+  <p> <%= @dead %>  </p>
+  <p>This Person is dead, killed by a Werewold.</p>
+  
+
+  <button class="clickable-button" type="button" onclick={"redirectToVoteDay('#{@code}', '#{@name}')"}>OH NO!</button>
+</div>
+
+<script>
+    function redirectToVoteDay(code, name){
+        window.location.href = '/voteDay/' + code + '/' + name
+    }
+
+</script>
