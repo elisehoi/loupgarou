@@ -68,6 +68,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
       phase: :waiting, # or day or Night
       votes: %{playerName => 0},
       expectedVoteWolf: 0,
+      expectedVote: 0,
       gamecode: game_code
       }
     {:ok, initial_statusDatabase}
@@ -157,17 +158,15 @@ end
       {player_name, 0}
     end)
 
-    updatedStatusDatabase =
-      statusDatabase
-      |> Map.put(:votes, newVoteDatabase)
+    updatedVotes = Map.put( statusDatabase, :votes, newVoteDatabase)
 
     nbOfPlayers = map_size(statusDatabase.players)
     nbOfWolf = round(nbOfPlayers/3)
-    updatedStatusDatabase =
-      Map.put(updatedStatusDatabase, :expectedVoteWolf, nbOfWolf)
-
-    {:reply, :ok, updatedStatusDatabase}
+    updatedExpectedWolfVote = Map.put(updatedVotes, :expectedVoteWolf, nbOfWolf)
+    updatedDB = Map.put(updatedExpectedWolfVote, :expectedVote, nbOfPlayers)
+    {:reply, :ok, updatedDB}
   end
+
 
   #@impl
   #def handle_call({:getExpectedVoteWolf}, _from, statusDatabase) do

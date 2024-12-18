@@ -76,18 +76,29 @@ end
     nbOfPlayers = map_size(playerMap)
     # ration between villlagers and werewolf = 1 to 3. => 1 Wolf = 3 Villagers
     nbOfWolf = round(nbOfPlayers/3)
-
+    IO.inspect("There would be #{nbOfWolf} Wolfs in this Game")
     IO.inspect("the amount of player is is:#{nbOfPlayers}")
 
     # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
-    # TODO: This always generate at least one werewolf
-     Enum.each(1..nbOfWolf, fn _i ->
-      {playerName, _pid}= Enum.random(Map.to_list(playerMap))
-      case Loupgarou.GameLogic.GameProcess.setRole(playerName, code, :Werewolf) do
-        :error -> IO.inspect("There's a problem with setting role to Wolf")
-        :ok -> nil
+
+    available_players = Map.keys(playerMap)
+
+    Enum.reduce(1..nbOfWolf, available_players, fn _i, available_players ->
+      player_name = Enum.random(available_players)
+
+      case Loupgarou.GameLogic.GameProcess.setRole(player_name, code, :Werewolf) do
+        :error ->
+          IO.inspect("There's a problem with setting role to Wolf for #{player_name}")
+          available_players # Return the unchanged list if there's an error
+
+        :ok ->
+          IO.inspect("#{player_name} is now a Werewolf")
+          new_available_players = List.delete(available_players, player_name)
+          new_available_players # Return the updated list without this player
       end
     end)
+
+
 
     # If player's role == :unknown, then the role :Villager is assign to this player.
     Enum.each(playerMap, fn {playerName, _pid} ->
@@ -100,6 +111,7 @@ end
       end
     end)
 
+    Phoenix.PubSub.broadcast(LoupgarouWeb.PubSub, "game:#{code}", {:role_distributed})
     redirect(conn, to: "/show_role/" <> code <> "/" <> name)
   end
 
@@ -117,13 +129,12 @@ end
   def night_time(conn, %{"code" => code, "name" => name}) do
     Loupgarou.GameLogic.GameProcess.resetVote(code)
     role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
-    IO.puts("here we ARRREE 1")
     if(role== :Werewolf) do
       playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
-      IO.puts("here we ARRREE 2")
+
       for {playerName, _pid} <- playerMap,
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
-        IO.puts("here we ARRREE 3")
+
         redirect(conn, to: "/#{code}/#{name}/wolf_night_live")
     else
       redirect(conn, to: "/#{code}/#{name}/night_live")
@@ -139,13 +150,35 @@ end
     if(statusDB.expectedVoteWolf== 0) do
       {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
       Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
-      render(conn, "dead.html", dead: playerName, code: code, name: name)
+      Loupgarou.GameLogic.GameProcess.resetVote(code)
+      redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
+
+      #render(conn, "dead.html", dead: playerName, code: code, name: name)
     end
   end
 
-  def voteDay(conn, %{"code" => code, "name" => name}) do
-    playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
-    render(conn, "voteDay.html", code: code, name: name, playerMap: playerMap)
+  def count_vote_day(conn, %{"code" => code, "name" => name, "suspect" => suspect}) do
+    IO.inspect("#{name} suspect that #{suspect} is a wolf")
+    Loupgarou.GameLogic.GameProcess.add_vote(suspect, code)
+     statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
+    # if(statusDB.expectedVote == 0) do
+    #   {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
+    #   #role = Loupgarou.GameLogic.GameProcess.getRole(playerName, code)
+    #   Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
+    #   Loupgarou.GameLogic.GameProcess.resetVote(code)
+    #   #render(conn, "result_vote.html", code: code, name: name, dead: playerName, role: role)
+    #   redirect(conn, to: "/#{code}/#{name}/#{playerName}/result_day_vote_live")
+    # else
+    #   conn
+    #   |> put_flash(:info, "Vote counted successfully for #{suspect}. Waiting for others to vote.")
+    #   #TODO add wait for others to vote
+    # end
+    {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
+    role = Loupgarou.GameLogic.GameProcess.getRole(playerName, code)
+    Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
+    Loupgarou.GameLogic.GameProcess.resetVote(code)
+    #   #render(conn, "result_vote.html", code: code, name: name, dead: playerName, role: role)
+    redirect(conn, to: "/#{code}/#{name}/#{playerName}/#{role}result_day_vote_live")
   end
 
 

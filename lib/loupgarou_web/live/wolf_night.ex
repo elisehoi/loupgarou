@@ -32,8 +32,7 @@ defmodule LoupgarouWeb.WolfNightLive do
           class="clickable-button"
           type="button"
           phx-click="redirect_to_vote"
-          phx-value-victim={player_name}
-        >
+          phx-value-victim={player_name}>
           <%= player_name %>
         </button>
       <% end %>
