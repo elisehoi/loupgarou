@@ -1,4 +1,6 @@
 defmodule LoupgarouWeb.Router do
+  alias LoupgarouWeb.WolfWon
+  alias LoupgarouWeb.VillageWon
   use LoupgarouWeb, :router
 
 
@@ -38,6 +40,9 @@ defmodule LoupgarouWeb.Router do
     live "/:code/:name/day_vote_live", DayVoteLive
     get "/count_vote_day/:code/:name/:suspect", PageController, :count_vote_day
     live "/:code/:name/:dead/:role/result_day_vote_live", ResultDayVoteLive
+    live "/game/winner", WinnerLive
+    live "/:code/villagers_won_live", VillageWon
+    live "/:code/wolves_won_live", WolfWon
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

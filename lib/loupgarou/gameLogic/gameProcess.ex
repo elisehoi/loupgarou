@@ -68,6 +68,12 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:getClickedPlayers}, 15_000)
   end
 
+
+
+
+
+
+
   # loop: same as while go on robot loop but for the player processes (handles messages)
   # statusDatabase : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
   @impl true
@@ -219,5 +225,36 @@ end
       end
     end
   end
+
+  @impl true
+  def handle_call({:countAlivePlayersByRole, role}, _from, statusDatabase) do
+    alive_count =
+      statusDatabase.players
+      |> Enum.filter(fn {_player_name, pid} ->
+        send(pid, {:getRole, self()})
+        receive do
+          {:replyRole, ^role} -> true
+          _ -> false
+        after 1000 -> false
+        end
+      end)
+      |> length()
+
+    {:reply, alive_count, statusDatabase}
+  end
+
+
+
+
+
+  # To count alive wolves
+  def getWolvesCount(game_code) do
+    GenServer.call(String.to_atom(game_code), {:countAlivePlayersByRole, :Werewolf})
+  end
+
+# To count alive villagers
+def getVillagersCount(game_code)do
+GenServer.call(String.to_atom(game_code), {:countAlivePlayersByRole, :Villager})
+end
 
 end

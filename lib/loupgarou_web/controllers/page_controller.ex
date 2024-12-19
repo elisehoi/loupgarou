@@ -146,11 +146,10 @@ end
     Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
     Loupgarou.GameLogic.GameProcess.resetVote(code)
 
-    redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
+    # Check if the game is over
+    index(conn, code)
 
-      #render(conn, "dead.html", dead: playerName, code: code, name: name)
-
-
+    #redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
   end
 
   def count_vote_day(conn, %{"code" => code, "name" => name, "suspect" => suspect}) do
@@ -174,9 +173,29 @@ end
     Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
     Loupgarou.GameLogic.GameProcess.resetVote(code)
     #   #render(conn, "result_vote.html", code: code, name: name, dead: playerName, role: role)
-    redirect(conn, to: "/#{code}/#{name}/#{playerName}/#{role}result_day_vote_live")
+    # Check if the game is over
+      index(conn, code)
+
+    #redirect(conn, to: "/#{code}/#{name}/#{playerName}/#{role}/result_day_vote_live")
   end
 
+
+  alias Loupgarou.GameLogic.GameProcess
+
+  # Action to render the page and display counts of alive wolves and villagers
+  def index(conn, %{"game_code" => game_code}) do
+    # Get the count of alive wolves
+    alive_wolves = GameProcess.getWolvesCount(game_code)
+
+    # Get the count of alive villagers
+    alive_villagers = GameProcess.getVillagersCount(game_code)
+
+    # Pass these counts to the view
+    render(conn, "index.html",
+      alive_wolves: alive_wolves,
+      alive_villagers: alive_villagers,
+      game_code: game_code)
+  end
 
 
 
