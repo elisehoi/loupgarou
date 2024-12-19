@@ -29,9 +29,14 @@ defmodule LoupgarouWeb.Morning2Live do
 
   @impl true
   def handle_event("redirect_to_vote_day", _, socket) do
-    
-    {:noreply,
-    push_redirect(socket,
-    to: "/#{socket.assigns.code}/#{socket.assigns.name}/day_vote_live" )}
+    db = Loupgarou.GameLogic.GameProcess.getstatusDatabase(socket.assigns.code)
+    if(socket.assigns.name == socket.assigns.victim) do
+      {:noreply, push_redirect(socket, to: "/#{socket.assigns.name}/dead_live")}
+
+    else
+      {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/day_vote_live")}
+
+    end
+
   end
 end

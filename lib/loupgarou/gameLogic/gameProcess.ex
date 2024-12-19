@@ -50,8 +50,6 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:resetVote})
   end
 
-
-
   def killPlayer(playerName, code) do
     GenServer.call(String.to_atom(code), {:killPlayer, playerName})
   end
@@ -203,7 +201,7 @@ end
   end
 
 
-  @impl
+  @impl true
   def handle_call({:killPlayer, playerName}, _from, statusDatabase) do
 
     case Map.get(statusDatabase.players, playerName, nil) do

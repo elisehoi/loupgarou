@@ -36,8 +36,11 @@ defmodule LoupgarouWeb.Router do
     get "/count_vote/:code/:name", PageController, :count_vote
     live "/:code/:name/:victim/morning_live", Morning2Live
     live "/:code/:name/day_vote_live", DayVoteLive
-    get "/count_vote_day/:code/:name/:suspect", PageController, :count_vote_day
+    get "/count_vote_day/:code/:name", PageController, :count_vote_day
     live "/:code/:name/:dead/:role/result_day_vote_live", ResultDayVoteLive
+    live "/:name/dead_live", DeadLive
+    live "/win_wolf_live", WinWolfLive
+    live  "/win_villager_live", WinVillagerLive
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -131,7 +131,6 @@ end
       playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
       for {playerName, _pid} <- playerMap,
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
-
         redirect(conn, to: "/#{code}/#{name}/wolf_night_live")
     else
       redirect(conn, to: "/#{code}/#{name}/night_live")
@@ -146,38 +145,84 @@ end
     Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
     Loupgarou.GameLogic.GameProcess.resetVote(code)
 
+    conn = checkGameEndNight(conn, code, playerName)
+    broadcast_payload = %{victim: playerName, game_ended: :false}
+    LoupgarouWeb.Endpoint.broadcast!("game:#{code}", "wake_up", broadcast_payload)
+    IO.inspect("Wolfs have finished voting, a message is send to the players to wake up")
     redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
 
       #render(conn, "dead.html", dead: playerName, code: code, name: name)
-
-
   end
 
-  def count_vote_day(conn, %{"code" => code, "name" => name, "suspect" => suspect}) do
-    IO.inspect("#{name} suspect that #{suspect} is a wolf")
-    Loupgarou.GameLogic.GameProcess.add_vote(suspect, code)
-     statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
-    # if(statusDB.expectedVote == 0) do
-    #   {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
-    #   #role = Loupgarou.GameLogic.GameProcess.getRole(playerName, code)
-    #   Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
-    #   Loupgarou.GameLogic.GameProcess.resetVote(code)
-    #   #render(conn, "result_vote.html", code: code, name: name, dead: playerName, role: role)
-    #   redirect(conn, to: "/#{code}/#{name}/#{playerName}/result_day_vote_live")
-    # else
-    #   conn
-    #   |> put_flash(:info, "Vote counted successfully for #{suspect}. Waiting for others to vote.")
-    #   #TODO add wait for others to vote
-    # end
+  def count_vote_day(conn, %{"code" => code, "name" => name}) do
+    IO.inspect("#{name} has voted who he think is a wolf")
+    statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
     {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
     role = Loupgarou.GameLogic.GameProcess.getRole(playerName, code)
     Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
     Loupgarou.GameLogic.GameProcess.resetVote(code)
     #   #render(conn, "result_vote.html", code: code, name: name, dead: playerName, role: role)
-    redirect(conn, to: "/#{code}/#{name}/#{playerName}/#{role}result_day_vote_live")
+    conn = checkGameEndDay(conn, code)
+    redirect(conn, to: "/#{code}/#{name}/#{playerName}/#{role}/result_day_vote_live")
   end
 
 
+  defp checkGameEndDay(conn, code) do
+    playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    nbplayers = Kernel.map_size(playerMap)
+    wolfs = for {playerName, _pid} <- playerMap,
+      Loupgarou.GameLogic.GameProcess.getRole(playerName, code) == :Werewolf,
+      do: playerName
+
+    nbVillagers = nbplayers - length(wolfs)
+
+
+    cond do
+      length(wolfs) == 0 ->
+        conn
+        |> redirect(to: "/win_villager_live")
+        |> halt()
+
+      nbVillagers == 0 ->
+        conn
+        |> redirect(to: "/win_wolf_live")
+        |> halt()
+      nbplayers <3 ->
+        conn
+        |> redirect(to: "/win_wolf_live")
+        |> halt()
+      true -> conn
+    end
+
+  end
+
+  defp checkGameEndNight(conn, code, victim) do
+    playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    nbplayers = Kernel.map_size(playerMap)
+    wolfs = for {playerName, _pid} <- playerMap,
+      Loupgarou.GameLogic.GameProcess.getRole(playerName, code) == :Werewolf,
+      do: playerName
+    nbVillagers = nbplayers - length(wolfs)
+
+    cond do
+      length(wolfs) == 0 ->
+        broadcast_payload = %{victim: victim, game_ended: :trueVillager}
+        LoupgarouWeb.Endpoint.broadcast!("game:#{code}", "wake_up", broadcast_payload)
+        conn
+        |> redirect(to: "/win_villager_live")
+        |> halt()
+
+      nbVillagers == 0 ->
+        broadcast_payload = %{victim: victim, game_ended: :trueWolf}
+        LoupgarouWeb.Endpoint.broadcast!("game:#{code}", "wake_up", broadcast_payload)
+        conn
+        |> redirect(to: "/win_wolf_live")
+        |> halt()
+
+      true -> conn
+    end
+
+  end
 
 
 

@@ -19,8 +19,7 @@ defmodule LoupgarouWeb.WolfNightLive do
                 name: name,
                 notWolf: not_wolf,
                 nbWolf: nb_wolfs,
-                clicked_players:
-                clicked_players,
+                clicked_players: clicked_players,
                 clicked: false)}
   end
 

@@ -7,6 +7,10 @@ defmodule LoupgarouWeb.NightLive do
     name = params["name"] || "Nameless player"
     code = params["code"]
 
+    # Subscribe to the topic game: code so that it wakes up when the wolves are fishing voting
+    LoupgarouWeb.Endpoint.subscribe("game:#{code}")
+    IO.inspect("Subscribed to topic: game:#{code}")
+
     # Assign values to the socket
     {:ok, assign(socket, name: name, code: code)}
   end
@@ -53,6 +57,20 @@ defmodule LoupgarouWeb.NightLive do
       </div>
     </div>
 """
-
   end
+
+@impl true
+def handle_info(%{event: "wake_up", payload: %{victim: victim, game_ended: game_ended}}, socket) do
+  IO.inspect("Players have received the message to wake")
+  cond do
+    game_ended == :trueWolf ->
+      {:noreply, push_redirect(socket, to: "/win_wolf_live") }
+    game_ended == :trueVillager ->
+      {:noreply, push_redirect(socket, to: "/win_villager_live") }
+
+    game_ended == :false ->
+      {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live") }
+  end
+  end
+
 end

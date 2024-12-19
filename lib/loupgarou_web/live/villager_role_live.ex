@@ -146,6 +146,7 @@ defmodule LoupgarouWeb.VillagerRoleLive do
     {:noreply, assign(socket, clicked_players: clicked_players)}
   end
 
+  @impl true 
   def handle_info(%{event: "redirect_to_night", payload: _}, socket) do
     # Redirect all players to the night phase
     {:noreply, push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
