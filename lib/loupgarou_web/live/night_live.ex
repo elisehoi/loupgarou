@@ -63,10 +63,10 @@ defmodule LoupgarouWeb.NightLive do
     IO.inspect("Received wake_up event with victim: #{victim}")
     db = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
     cond do
-      db.phase == :EndWolf -> push_redirect(socket, to: "/win_wolf_live")
-      db.phase == :EndVillager -> push_redirect(socket, to: "/win_villager_live")
+      db.phase == :EndWolf -> push_navigate(socket, to: "/win_wolf_live")
+      db.phase == :EndVillager -> push_navigate(socket, to: "/win_villager_live")
       true -> {:noreply,
-      push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live")}
+      push_navigate(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live")}
     end
   end
 

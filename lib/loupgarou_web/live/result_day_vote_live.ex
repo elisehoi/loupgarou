@@ -73,14 +73,14 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
         Loupgarou.GameLogic.GameProcess.reset_clicked_players(socket.assigns.code)
         db = Loupgarou.GameLogic.GameProcess.getstatusDatabase(socket.assigns.code)
         cond do
-          db.phase == :EndWolf -> push_redirect(socket, to: "/win_wolf_live")
+          db.phase == :EndWolf -> push_navigate(socket, to: "/win_wolf_live")
                                   LoupgarouWeb.Endpoint.broadcast!(
                                     "game:#{socket.assigns.code}",
                                     "redirect_to_End", %{}
                                   )
-          db.phase == :EndVillager -> push_redirect(socket, to: "/win_villager_live")
+          db.phase == :EndVillager -> push_navigate(socket, to: "/win_villager_live")
           true -> {:noreply,
-            push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+            push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
         end
 
 
@@ -94,7 +94,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
         )
 
         # Redirect the current player to the night phase
-        {:noreply, push_redirect(socket, to: "/count_vote_day/#{socket.assigns.code}/#{socket.assigns.name}")}
+        {:noreply, push_navigate(socket, to: "/count_vote_day/#{socket.assigns.code}/#{socket.assigns.name}")}
       else
         # Not all players are ready, just update the count
         {:noreply, socket}
