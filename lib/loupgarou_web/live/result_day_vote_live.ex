@@ -21,6 +21,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
                          role: role,
                          playerMap: playerMap,
                          clicked: false,
+                         nb_players: nb_players,
                          clicked_players: clicked_players)}
   end
 
@@ -57,6 +58,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   def handle_event("continue", _, socket) do
     Loupgarou.GameLogic.GameProcess.increment_clicked_players(socket.assigns.code)
     updated_clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(socket.assigns.code)
+
     LoupgarouWeb.Endpoint.broadcast!(
       "game:#{socket.assigns.code}",
       "update_clicked_players_resultDay",
@@ -70,36 +72,65 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
       if updated_clicked_players == socket.assigns.nb_players do
         Loupgarou.GameLogic.GameProcess.reset_clicked_players(socket.assigns.code)
         db = Loupgarou.GameLogic.GameProcess.getstatusDatabase(socket.assigns.code)
-        cond do
-          db.phase == :EndWolf -> push_navigate(socket, to: "/win_wolf_live")
-                                  LoupgarouWeb.Endpoint.broadcast!(
-                                    "game:#{socket.assigns.code}",
-                                    "redirect_to_End", %{}
-                                  )
-          db.phase == :EndVillager -> push_navigate(socket, to: "/win_villager_live")
-          true -> {:noreply,
-            push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
-        end
+          case db.phase do
+            :EndWolf ->
+              LoupgarouWeb.Endpoint.broadcast!(
+                "game:#{socket.assigns.code}",
+                "redirect_to_EndWolf",
+                %{})
+              {:noreply, push_navigate(socket, to: "/win_wolf_live")}
 
+              :EndVillager ->
+              LoupgarouWeb.Endpoint.broadcast!(
+                "game:#{socket.assigns.code}",
+                "redirect_to_EndVillager",
+                %{})
+                {:noreply, push_navigate(socket, to: "/win_villager_live")}
 
-
-
-
-        # Broadcast a message to redirect all players
-        LoupgarouWeb.Endpoint.broadcast!(
-          "game:#{socket.assigns.code}",
-          "redirect_to_count_vote_day", %{}
-        )
-
-        # Redirect the current player to the night phase
-        {:noreply, push_navigate(socket, to: "/count_vote_day/#{socket.assigns.code}/#{socket.assigns.name}")}
+              _ ->
+                LoupgarouWeb.Endpoint.broadcast!(
+                  "game:#{socket.assigns.code}",
+                  "redirect_to_continue",
+                  %{})
+                {:noreply,
+                 push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+            end
       else
         # Not all players are ready, just update the count
         {:noreply, socket}
       end
+    end
 
 
-
+  @impl true
+  def handle_info(%{event: "update_clicked_players_resultDay", payload: %{clicked_players: clicked_players}}, socket) do
+    {:noreply, assign(socket, clicked_players: clicked_players)}
   end
 
+  @impl true
+  def handle_event(%{event: "redirect_to_EndWolf"}, socket) do
+    # Redirect to the vote counting route
+    {:noreply,
+     push_navigate(socket,
+       to: "/win_wolf_live"
+     )}
+  end
+
+  @impl true
+  def handle_event(%{event: "redirect_to_EndVillager"}, socket) do
+    # Redirect to the vote counting route
+    {:noreply,
+     push_navigate(socket,
+       to: "/win_villager_live"
+     )}
+  end
+
+  @impl true
+  def handle_event(%{event: "redirect_to_continue"}, socket) do
+    # Redirect to the vote counting route
+    {:noreply,
+     push_navigate(socket,
+       to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}"
+     )}
+  end
 end
