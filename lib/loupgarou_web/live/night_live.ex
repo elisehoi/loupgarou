@@ -3,15 +3,13 @@ defmodule LoupgarouWeb.NightLive do
 
   @impl true
   def mount(params, _session, socket) do
-    # Extract `:name` from the parameters passed in the URL
-    name = params["name"] || "Nameless player"
     code = params["code"]
+    name = params["name"] || "Nameless player"
 
-    # Subscribe to the topic game: code so that it wakes up when the wolves are fishing voting
-    LoupgarouWeb.Endpoint.subscribe("game:#{code}")
+    # Subscribe to the game's topic
+    Phoenix.PubSub.subscribe(LoupgarouWeb.PubSub, "game:#{code}")
     IO.inspect("Subscribed to topic: game:#{code}")
 
-    # Assign values to the socket
     {:ok, assign(socket, name: name, code: code)}
   end
 
@@ -59,18 +57,23 @@ defmodule LoupgarouWeb.NightLive do
 """
   end
 
-@impl true
-def handle_info(%{event: "wake_up", payload: %{victim: victim, game_ended: game_ended}}, socket) do
-  IO.inspect("Players have received the message to wake")
-  cond do
-    game_ended == :trueWolf ->
-      {:noreply, push_redirect(socket, to: "/win_wolf_live") }
-    game_ended == :trueVillager ->
-      {:noreply, push_redirect(socket, to: "/win_villager_live") }
 
-    game_ended == :false ->
-      {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live") }
+  @impl true
+  def handle_info(%{event: "wake_up", payload: %{victim: victim, code: code}}, socket) do
+    IO.inspect("Received wake_up event with victim: #{victim}")
+    db = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
+    cond do
+      db.phase == :EndWolf -> push_redirect(socket, to: "/win_wolf_live")
+      db.phase == :EndVillager -> push_redirect(socket, to: "/win_villager_live")
+      true -> {:noreply,
+      push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live")}
+    end
   end
+
+  # Catch all unmatched messages for debugging
+  def handle_info(message, socket) do
+    IO.inspect(message, label: "Unhandled Message in NightLive")
+    {:noreply, socket}
   end
 
 end

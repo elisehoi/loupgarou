@@ -138,20 +138,22 @@ end
   end
 
 
+
   def count_vote(conn, %{"code" => code, "name" => name}) do
     IO.inspect("#{name} Voted in game: #{code}")
+
     statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
     {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
     Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
     Loupgarou.GameLogic.GameProcess.resetVote(code)
-
-    conn = checkGameEndNight(conn, code, playerName)
-    broadcast_payload = %{victim: playerName, game_ended: :false}
+    checkGameEndNight(code)
+    # Broadcast to the "game:<code>" topic
+    broadcast_payload = %{victim: playerName, code: code}
     LoupgarouWeb.Endpoint.broadcast!("game:#{code}", "wake_up", broadcast_payload)
-    IO.inspect("Wolfs have finished voting, a message is send to the players to wake up")
-    redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
 
-      #render(conn, "dead.html", dead: playerName, code: code, name: name)
+    IO.inspect("Broadcast sent to game:#{code} with payload: #{inspect(broadcast_payload)}")
+
+    redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
   end
 
   def count_vote_day(conn, %{"code" => code, "name" => name}) do
@@ -162,41 +164,27 @@ end
     Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
     Loupgarou.GameLogic.GameProcess.resetVote(code)
     #   #render(conn, "result_vote.html", code: code, name: name, dead: playerName, role: role)
-    conn = checkGameEndDay(conn, code)
+    checkGameEndDay(code)
     redirect(conn, to: "/#{code}/#{name}/#{playerName}/#{role}/result_day_vote_live")
   end
 
 
-  defp checkGameEndDay(conn, code) do
+  defp checkGameEndNight( code) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbplayers = Kernel.map_size(playerMap)
     wolfs = for {playerName, _pid} <- playerMap,
       Loupgarou.GameLogic.GameProcess.getRole(playerName, code) == :Werewolf,
       do: playerName
-
     nbVillagers = nbplayers - length(wolfs)
 
-
     cond do
-      length(wolfs) == 0 ->
-        conn
-        |> redirect(to: "/win_villager_live")
-        |> halt()
-
-      nbVillagers == 0 ->
-        conn
-        |> redirect(to: "/win_wolf_live")
-        |> halt()
-      nbplayers <3 ->
-        conn
-        |> redirect(to: "/win_wolf_live")
-        |> halt()
-      true -> conn
+      nbVillagers == 0 ->Loupgarou.GameLogic.GameProcess.setPhase(code, :EndWolf)
+      length(wolfs) == 0 -> Loupgarou.GameLogic.GameProcess.setPhase(code, :EndVillager)
+      true -> nil
     end
-
   end
 
-  defp checkGameEndNight(conn, code, victim) do
+  defp checkGameEndDay(code) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbplayers = Kernel.map_size(playerMap)
     wolfs = for {playerName, _pid} <- playerMap,
@@ -205,23 +193,11 @@ end
     nbVillagers = nbplayers - length(wolfs)
 
     cond do
-      length(wolfs) == 0 ->
-        broadcast_payload = %{victim: victim, game_ended: :trueVillager}
-        LoupgarouWeb.Endpoint.broadcast!("game:#{code}", "wake_up", broadcast_payload)
-        conn
-        |> redirect(to: "/win_villager_live")
-        |> halt()
-
-      nbVillagers == 0 ->
-        broadcast_payload = %{victim: victim, game_ended: :trueWolf}
-        LoupgarouWeb.Endpoint.broadcast!("game:#{code}", "wake_up", broadcast_payload)
-        conn
-        |> redirect(to: "/win_wolf_live")
-        |> halt()
-
-      true -> conn
+      nbVillagers == 0 ->Loupgarou.GameLogic.GameProcess.setPhase(code, :EndWolf)
+      nbplayers<3 -> Loupgarou.GameLogic.GameProcess.setPhase(code, :EndWolf)
+      length(wolfs) == 0 -> Loupgarou.GameLogic.GameProcess.setPhase(code, :EndVillager)
+      true -> nil
     end
-
   end
 
 
