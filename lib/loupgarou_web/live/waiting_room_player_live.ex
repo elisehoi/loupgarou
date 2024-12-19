@@ -34,7 +34,7 @@ defmodule LoupgarouWeb.WaitingRoomPlayerLive do
     IO.puts("PLAYER RECEIVED GAME STARTED")
     Process.sleep(2000)
     {:noreply,
-     push_redirect(socket,
+     push_navigate(socket,
        to: "/show_role/#{socket.assigns.code}/#{socket.assigns.player_name}"
      )}
 

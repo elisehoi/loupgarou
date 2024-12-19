@@ -41,7 +41,7 @@ defmodule LoupgarouWeb.WolfRoleLive do
   def handle_event("redirect_to_night", _value, socket) do
     # Redirect to the night phase with code and name in the URL
     {:noreply,
-     push_redirect(socket,
+     push_navigate(socket,
        to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}"
      )}
   end

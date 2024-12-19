@@ -132,10 +132,10 @@ defmodule LoupgarouWeb.WolfNightLive do
           %{winner: "wolves"}
         )
 
-        {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/wolves_won_live")}
+        {:noreply, push_navigate(socket, to: "/#{socket.assigns.code}/wolves_won_live")}
       else
         # If the game is not over, continue with the vote count phase
-        {:noreply, push_redirect(socket, to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}")}
+        {:noreply, push_navigate(socket, to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}")}
       end
     else
       # Not all wolves have voted yet, just update the socket

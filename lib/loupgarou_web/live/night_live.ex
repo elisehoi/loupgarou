@@ -49,10 +49,10 @@ defmodule LoupgarouWeb.NightLive do
 
     <div class="night-live">
       <div class="content-box">
-        <h2>Sleeping....<%= @name %></h2>
+        <h2>Sleep well, <%= @name %>...</h2>
         <h2>
           The day is over, it's time to rest. Enjoy your sleep. Who knows...
-          it may be your last one.
+          it may be the last time you do.
         </h2>
       </div>
     </div>
@@ -64,12 +64,12 @@ def handle_info(%{event: "wake_up", payload: %{victim: victim, game_ended: game_
   IO.inspect("Players have received the message to wake")
   cond do
     game_ended == :trueWolf ->
-      {:noreply, push_redirect(socket, to: "/win_wolf_live") }
+      {:noreply, push_navigate(socket, to: "/win_wolf_live") }
     game_ended == :trueVillager ->
-      {:noreply, push_redirect(socket, to: "/win_villager_live") }
+      {:noreply, push_navigate(socket, to: "/win_villager_live") }
 
     game_ended == :false ->
-      {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live") }
+      {:noreply, push_navigate(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live") }
   end
   end
 

@@ -30,7 +30,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   @impl true
   def handle_event("redirect_to_vote_day", _, socket) do
     {:noreply,
-    push_redirect(socket,
+    push_navigate(socket,
     to: "/#{socket.assigns.code}/#{socket.assigns.name}/day_vote_live" )}
   end
 

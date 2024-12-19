@@ -43,7 +43,7 @@ defmodule LoupgarouWeb.WaitingRoomMasterLive do
 
     # Redirect to the role distribution page
     {:noreply,
-     push_redirect(socket,
+     push_navigate(socket,
        to: "/role_distribution/#{socket.assigns.code}/#{socket.assigns.player_name}"
      )}
   end

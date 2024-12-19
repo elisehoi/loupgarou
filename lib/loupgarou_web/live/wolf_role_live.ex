@@ -78,8 +78,7 @@ defmodule LoupgarouWeb.WolfRoleLive do
       />
       <h2>A Werewolf</h2>
       <p>
-        The werewolf is the game’s villain and main antagonist. The werewolf’s
-        only job is to stalk the villagers at night and kill them without getting
+        The werewolf is the game’s main antagonist. Their only job is to stalk the villagers at night and kill them without getting
         caught. This role can win by eliminating all the villagers (how lovely?!)
       </p>
 
@@ -134,8 +133,8 @@ defmodule LoupgarouWeb.WolfRoleLive do
       )
 
       # Redirect the current player to the night phase
-      #{:noreply, push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
-      {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live")}
+      #{:noreply, push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+      {:noreply, push_navigate(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live")}
     else
       # Not all players are ready, just update the count
       {:noreply, socket}
@@ -150,6 +149,6 @@ defmodule LoupgarouWeb.WolfRoleLive do
 
   def handle_info(%{event: "redirect_to_night", payload: _}, socket) do
     # Redirect all players to the night phase
-    {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live")}
+    {:noreply, push_navigate(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live")}
   end
 end
