@@ -66,6 +66,10 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:getClickedPlayers}, 15_000)
   end
 
+  def setPhase(code, phase) do
+    GenServer.call(String.to_atom(code), {:setPhase, phase})
+  end
+
 
 
 
@@ -80,7 +84,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
     initial_statusDatabase = %{
       players: %{playerName=>pid},
-      phase: :waiting, # or day or Night
+      phase: :waiting, # or: dead
       votes: %{playerName => 0},
       expectedVoteWolf: 0,
       expectedVote: 0,
@@ -132,6 +136,12 @@ end
   @impl true
   def handle_call({:getstatusDatabase}, _from, statusDatabase) do
     {:reply, statusDatabase, statusDatabase}
+  end
+
+  @impl true
+  def handle_call({:setPhase, phase}, _from, statusDatabase) do
+    updatedDatabase = %{statusDatabase | phase: phase}
+    {:reply, :ok, updatedDatabase}
   end
 
   @impl true
