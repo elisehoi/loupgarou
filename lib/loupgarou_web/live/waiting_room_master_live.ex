@@ -52,7 +52,7 @@ defmodule LoupgarouWeb.WaitingRoomMasterLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <p>Your game with the game code: <strong><%= @code %></strong> will start as soon as you wish.</p>
+    <p>Your game with the game code: <strong><%= @code %></strong> will start as soon as you wish. A minimum of 2 players are required for the game to start.</p>
     <br>
     <p>Players online:</p>
     <br>
@@ -68,21 +68,23 @@ defmodule LoupgarouWeb.WaitingRoomMasterLive do
 
     <style>
       .clickable-button {
-        background-color: #4CAF50; /* Green background */
-        color: white; /* White text */
-        border: none; /* Remove default border */
-        padding: 10px 20px; /* Add padding */
-        text-align: center; /* Center the text */
-        text-decoration: none; /* Remove underline */
-        display: inline-block; /* Make it inline */
-        font-size: 16px; /* Set font size */
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor on hover */
-        transition: background-color 0.3s ease; /* Smooth hover transition */
+        background-color: #252531;
+        color: white; /*  text color*/
+        border: none;
+        padding: 8px 18px; /* Add padding */
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-family: Apple Chancery, cursive;
+        font-weight: bold;
+        font-size: 18px;
+        border-radius: 8px; /* Rounded corners */
+        cursor: pointer;
+        transition: background-color 0.3s ease;
       }
 
       .clickable-button:hover {
-        background-color: #45a049; /* Darker green on hover */
+        background-color: #000000;
       }
     </style>
     """

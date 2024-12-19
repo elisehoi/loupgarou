@@ -12,8 +12,6 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
 
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(code)
-    nb_players = Loupgarou.GameLogic.GameProcess.getPlayerCount(code)
-
 
 
     # Assign values to the socket

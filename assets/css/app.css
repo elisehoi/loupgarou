@@ -66,11 +66,26 @@
     color: #252531; /*  text color*/
 
   }
+  .game-text-cursive{
+    font-family: Apple Chancery, cursive;
+  }
+  .game-text-arial{
+
+  }
+
   .text-input-field{
     width: 20%; 
     padding: 10px; 
     font-size: 18px;
     font-family: Apple Chancery, cursive;
+    background-color: #f7f4ea;
+    color: rgb(46, 46, 46); /*  text color*/
+  }
+  .text-input-field-code{
+    width: 20%; 
+    padding: 10px; 
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
     background-color: #f7f4ea;
     color: rgb(46, 46, 46); /*  text color*/
   }

@@ -6,11 +6,9 @@ defmodule LoupgarouWeb.WaitingRoomPlayerLive do
 
   @impl true
   def mount(%{"code" => code, "name" => name}, _session, socket) do    if connected?(socket) do
-      # Subscribe to updates from the game process if needed
       Phoenix.PubSub.subscribe(LoupgarouWeb.PubSub, "game:#{code}")
     end
 
-    # Fetch the initial list of players
     player_map = GameProcess.getPlayerMap(code)
 
     {:ok, assign(socket, code: code, player_name: name, player_map: player_map)}
@@ -18,20 +16,18 @@ defmodule LoupgarouWeb.WaitingRoomPlayerLive do
 
   @impl true
   def handle_info({:player_joined, new_player}, socket) do
-    # Add the new player to the player map
+    # add the new player status db / player map
     updated_player_map = Map.put(socket.assigns.player_map, new_player, :pid_placeholder)
     {:noreply, assign(socket, player_map: updated_player_map)}
   end
 
   def handle_info({:player_left, player_name}, socket) do
-    # Remove the player who left
     updated_player_map = Map.delete(socket.assigns.player_map, player_name)
     {:noreply, assign(socket, player_map: updated_player_map)}
   end
 
   @impl true
   def handle_info({:game_started}, socket) do
-    IO.puts("PLAYER RECEIVED GAME STARTED")
     Process.sleep(2000)
     {:noreply,
      push_navigate(socket,

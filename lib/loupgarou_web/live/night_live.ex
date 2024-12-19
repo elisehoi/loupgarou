@@ -31,7 +31,7 @@ defmodule LoupgarouWeb.NightLive do
 
       /* White transparent background box for content */
       .content-box {
-        background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
+        background-color: rgba(255, 255, 255, 0.8);
         padding: 20px;
         border-radius: 10px;
         max-width: 800px;
@@ -39,9 +39,8 @@ defmodule LoupgarouWeb.NightLive do
         text-align: center;
       }
 
-      /* Text styling */
       h2 {
-        color: #333; /* Dark text for better readability */
+        color: #333;
       }
     </style>
 
@@ -70,7 +69,6 @@ defmodule LoupgarouWeb.NightLive do
     end
   end
 
-  # Catch all unmatched messages for debugging
   def handle_info(message, socket) do
     IO.inspect(message, label: "Unhandled Message in NightLive")
     {:noreply, socket}

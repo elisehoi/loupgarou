@@ -162,7 +162,7 @@ defmodule LoupgarouWeb.WolfNightLive do
 
 
   defp get_non_wolf_players(code) do
-    players = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
+    _players = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
 
   #for name in players
     |> Enum.reduce([], fn {name, _pid}, not_werewolves ->

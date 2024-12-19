@@ -37,6 +37,7 @@ defmodule LoupgarouWeb.VillagerRoleLive do
         justify-content: center;
         align-items: center;
         height: 100vh;
+        margin-top: -25px;
       }
 
       /* White transparent background box for content */
@@ -76,6 +77,7 @@ defmodule LoupgarouWeb.VillagerRoleLive do
       <img
         src="https://images.vexels.com/media/users/3/128325/isolated/preview/0f52205b21536ca0dbbdac51891348e0-old-farmer-cartoon.png"
         alt="Villager"
+        style="height: 50%; width: 50%;"
       />
       <h2>A Villager</h2>
       <p>
