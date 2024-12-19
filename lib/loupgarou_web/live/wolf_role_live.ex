@@ -101,30 +101,24 @@ defmodule LoupgarouWeb.WolfRoleLive do
 
   @impl true
   def handle_event("mark_ready", _value, socket) do
-    # Increment the count of clicked players in the game logic
     Loupgarou.GameLogic.GameProcess.increment_clicked_players(socket.assigns.code)
 
-    # Get the updated clicked players count after incrementing
     updated_clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(socket.assigns.code)
 
-    # Broadcast the updated count to all players in the same game
     LoupgarouWeb.Endpoint.broadcast!(
       "game:#{socket.assigns.code}",
       "update_clicked_players",
       %{clicked_players: updated_clicked_players}
     )
 
-    # Update the socket state for the current player
     socket =
       socket
       |> assign(clicked: true)
       |> assign(clicked_players: updated_clicked_players)
 
-    # Check if all players are ready
     if updated_clicked_players == socket.assigns.total_players do
       Loupgarou.GameLogic.GameProcess.reset_clicked_players(socket.assigns.code)
 
-      # Broadcast a message to redirect all players
       LoupgarouWeb.Endpoint.broadcast!(
         "game:#{socket.assigns.code}",
         "redirect_to_night",
@@ -132,11 +126,9 @@ defmodule LoupgarouWeb.WolfRoleLive do
         %{url: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live"}
       )
 
-      # Redirect the current player to the night phase
       #{:noreply, push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
       {:noreply, push_navigate(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live")}
     else
-      # Not all players are ready, just update the count
       {:noreply, socket}
     end
   end

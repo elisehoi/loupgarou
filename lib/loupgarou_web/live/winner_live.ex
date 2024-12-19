@@ -8,13 +8,12 @@ defmodule LoupgarouWeb.WinnerLive do
     {:ok, assign(socket, winner: winner)}
   end
 
-  # Render the winner view based on the winner
   def render(assigns) do
     ~L"""
     <div>
       <h1>Game Over!</h1>
-      <p>The <%= @winner %> have won the game!</p>
-      <a href="/">Back to Home</a>
+      <p>The <%= @winner %> has won the game!</p>
+      <button style=clickable-button href="/">Back to Home</button>
     </div>
     """
   end

@@ -52,7 +52,7 @@ defmodule LoupgarouWeb.WaitingRoomMasterLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <p>Your game with the game code: <strong><%= @code %></strong> will start as soon as you wish. A minimum of 2 players are required for the game to start.</p>
+    <p>Your game with the game code: <strong><%= @code %></strong> will start as soon as you wish. A minimum of 3 players are required for the game to start.</p>
     <br>
     <p>Players online:</p>
     <br>

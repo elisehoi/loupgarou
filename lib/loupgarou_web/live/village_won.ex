@@ -5,7 +5,6 @@ defmodule LoupgarouWeb.VillageWon do
   def mount(params, _session, socket) do
     code = params["code"]
 
-    # Initialize state and subscribe to the game topic if needed
     socket = socket |> assign(code: code)
 
     {:ok, socket}

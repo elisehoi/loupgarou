@@ -12,3 +12,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 1. Run the server on the host machine with `mix phx.server`
 2. Find your IP with `hostname -I` in a terminal on the host machine
 3. Connect to this ip with the port (:4000) on the remote machine
+
+## Important note!
+
+If the game process / genserver crahses, please restart the game from the beginning. It should normally work again

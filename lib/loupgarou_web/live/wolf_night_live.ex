@@ -104,40 +104,37 @@ defmodule LoupgarouWeb.WolfNightLive do
   @impl true
   def handle_event("mark_ready", %{"player_name" => player_name}, socket) do
     Loupgarou.GameLogic.GameProcess.add_vote(player_name, socket.assigns.code)
-    # Increment the count of clicked players in the game logic
     Loupgarou.GameLogic.GameProcess.increment_clicked_players(socket.assigns.code)
 
-    # Get the updated clicked players count after incrementing
     updated_clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(socket.assigns.code)
 
-    # Broadcast the updated count to all players in the same game
+    # broadcast the updated count to all players in the same game
     LoupgarouWeb.Endpoint.broadcast!(
       "game:#{socket.assigns.code}",
       "update_clicked_players",
       %{clicked_players: updated_clicked_players}
     )
 
-    # Update the socket state for the current player
     socket =
       socket
       |> assign(clicked: true)
       |> assign(clicked_players: updated_clicked_players)
 
-    # Check if all wolves have voted
+    # check if all wolves have voted
     if updated_clicked_players == socket.assigns.nbWolf do
       Loupgarou.GameLogic.GameProcess.reset_clicked_players(socket.assigns.code)
 
-      # Broadcast a message to redirect all players
+      # broadcast a message to redirect all players
       LoupgarouWeb.Endpoint.broadcast!(
         "game:#{socket.assigns.code}",
         "redirect_to_count_vote_wolf", %{}
       )
 
-      # Redirect the current player to the night phase
+      # redirect the current player to the night phase
 
       {:noreply, push_navigate(socket, to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}")}
     else
-      # Not all players are ready, just update the count
+      # not all players are ready, just update the count
       {:noreply, socket}
     end
   end
@@ -153,7 +150,7 @@ defmodule LoupgarouWeb.WolfNightLive do
 
   @impl true
   def handle_event(%{event: "redirect_to_count_vote_wolf"}, socket) do
-    # Redirect to the vote counting route
+    # redirect to the vote counting route
     {:noreply,
      push_navigate(socket,
        to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}"

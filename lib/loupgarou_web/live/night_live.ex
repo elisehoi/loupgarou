@@ -6,7 +6,6 @@ defmodule LoupgarouWeb.NightLive do
     code = params["code"]
     name = params["name"] || "Nameless player"
 
-    # Subscribe to the game's topic
     Phoenix.PubSub.subscribe(LoupgarouWeb.PubSub, "game:#{code}")
     IO.inspect("Subscribed to topic: game:#{code}")
 
@@ -17,7 +16,6 @@ defmodule LoupgarouWeb.NightLive do
   def render(assigns) do
 ~H"""
     <style>
-      /* Background and container styling */
       .night-live {
         background-image: url('https://w0.peakpx.com/wallpaper/594/33/HD-wallpaper-farm-windmill-holidays-halloween-moon-pumpkin-drawings-blue-night-corn-lamp-cloud-houses-digital-painting-scarecrow-scarecrows-pumpkins-field.jpg');
         background-size: cover;
@@ -29,7 +27,6 @@ defmodule LoupgarouWeb.NightLive do
         height: 100vh;
       }
 
-      /* White transparent background box for content */
       .content-box {
         background-color: rgba(255, 255, 255, 0.8);
         padding: 20px;
