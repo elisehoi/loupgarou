@@ -32,19 +32,13 @@ defmodule LoupgarouWeb.WaitingRoomPlayerLive do
   @impl true
   def handle_info({:game_started}, socket) do
     IO.puts("PLAYER RECEIVED GAME STARTED")
-    # {:noreply,
-    #  push_redirect(socket,
-    #    to: "/role_distribution/#{socket.assigns.code}/#{socket.assigns.player_name}"
-    #  )}
-  end
-
-  @impl true
-  def handle_info({:role_distributed}, socket) do
-    IO.inspect("the roles are distributed and the players would be redirected to the next page to see their role")
+    Process.sleep(2000)
     {:noreply,
-      push_redirect(socket,
-        to: "/show_role/#{socket.assigns.code}/#{socket.assigns.player_name}"
-      )}
+     push_redirect(socket,
+       to: "/show_role/#{socket.assigns.code}/#{socket.assigns.player_name}"
+     )}
+
+
   end
 
   @impl true

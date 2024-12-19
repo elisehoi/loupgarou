@@ -47,7 +47,7 @@ defmodule LoupgarouWeb.WaitingRoomMasterLive do
        to: "/role_distribution/#{socket.assigns.code}/#{socket.assigns.player_name}"
      )}
   end
-  
+
 
   @impl true
   def render(assigns) do

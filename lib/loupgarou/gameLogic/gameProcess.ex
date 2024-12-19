@@ -80,13 +80,10 @@ defmodule Loupgarou.GameLogic.GameProcess do
       phase: :waiting, # or day or Night
       votes: %{playerName => 0},
       expectedVoteWolf: 0,
-<<<<<<< HEAD
       expectedVote: 0,
-      gamecode: game_code
-=======
       gamecode: game_code,
       clickedPlayers: 0
->>>>>>> 9b609694e21e323cc46329ddd17d06a0acac8a7a
+
       }
 
       {:ok, initial_statusDatabase}
@@ -185,13 +182,6 @@ end
     {:reply, :ok, updatedDB}
   end
 
-<<<<<<< HEAD
-
-  #@impl
-  #def handle_call({:getExpectedVoteWolf}, _from, statusDatabase) do
-   # {:reply, statusDatabase.expectedVoteWolf, statusDatabase}
-  #end
-=======
   @impl true
   def handle_call({:getClickedPlayers}, _from, statusDatabase) do
     {:reply, statusDatabase.clickedPlayers, statusDatabase}
@@ -199,8 +189,10 @@ end
 
     @impl true
     def handle_cast({:resetClickedPlayers}, statusDatabase) do
+
       updatedClickedPlayers = 0
       updatedDatabase = %{statusDatabase | clickedPlayers: updatedClickedPlayers}
+      IO.inspect("reset clicked players to #{updatedDatabase.clickedPlayers}")
       {:noreply, updatedDatabase}
     end
 
@@ -211,7 +203,7 @@ end
     updatedDatabase = %{statusDatabase | clickedPlayers: updatedClickedPlayers}
     {:noreply, updatedDatabase}
   end
->>>>>>> 9b609694e21e323cc46329ddd17d06a0acac8a7a
+
 
   @impl
   def handle_call({:killPlayer, playerName}, _from, statusDatabase) do

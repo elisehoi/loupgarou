@@ -10,7 +10,18 @@ defmodule LoupgarouWeb.WolfNightLive do
     # Here you should fetch or assign the list of non-wolf players (replace `get_non_wolf_players/1`)
     not_wolf = get_non_wolf_players(code)
 
-    {:ok, assign(socket, code: code, name: name, notWolf: not_wolf)}
+    total_players = Loupgarou.GameLogic.GameProcess.getPlayerCount(code)
+    nb_wolfs = total_players - length(not_wolf)
+    clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(code)
+
+    {:ok, assign(socket,
+                code: code,
+                name: name,
+                notWolf: not_wolf,
+                nbWolf: nb_wolfs,
+                clicked_players:
+                clicked_players,
+                clicked: false)}
   end
 
   @impl true
@@ -75,12 +86,15 @@ defmodule LoupgarouWeb.WolfNightLive do
       <!-- Loop through non-wolf players to create buttons -->
       <%= for player_name <- @notWolf do %>
         <button
-          class="clickable-button"
-          type="button"
-          phx-click="redirect_to_vote"
-          phx-value-victim={player_name}>
-          <%= player_name %>
-        </button>
+            class="clickable-button"
+            type="button"
+            phx-click="mark_ready"
+            phx-value-player_name={player_name}
+            phx-disabled={@clicked}
+          >
+            <%= if @clicked, do: "Voted", else: player_name %>
+          </button>
+
       <% end %>
       </div>
     </div>
@@ -88,11 +102,61 @@ defmodule LoupgarouWeb.WolfNightLive do
   end
 
   @impl true
-  def handle_event("redirect_to_vote", %{"victim" => victim}, socket) do
+  def handle_event("mark_ready", %{"player_name" => player_name}, socket) do
+    Loupgarou.GameLogic.GameProcess.add_vote(player_name, socket.assigns.code)
+    # Increment the count of clicked players in the game logic
+    Loupgarou.GameLogic.GameProcess.increment_clicked_players(socket.assigns.code)
+
+    # Get the updated clicked players count after incrementing
+    updated_clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(socket.assigns.code)
+
+    # Broadcast the updated count to all players in the same game
+    LoupgarouWeb.Endpoint.broadcast!(
+      "game:#{socket.assigns.code}",
+      "update_clicked_players",
+      %{clicked_players: updated_clicked_players}
+    )
+
+    # Update the socket state for the current player
+    socket =
+      socket
+      |> assign(clicked: true)
+      |> assign(clicked_players: updated_clicked_players)
+
+    # Check if all wolves have voted
+    if updated_clicked_players == socket.assigns.nbWolf do
+      Loupgarou.GameLogic.GameProcess.reset_clicked_players(socket.assigns.code)
+
+      # Broadcast a message to redirect all players
+      LoupgarouWeb.Endpoint.broadcast!(
+        "game:#{socket.assigns.code}",
+        "redirect_to_count_vote_wolf", %{}
+      )
+
+      # Redirect the current player to the night phase
+
+      {:noreply, push_redirect(socket, to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}")}
+    else
+      # Not all players are ready, just update the count
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_info(%{event: "update_clicked_players", payload: %{clicked_players: clicked_players}}, socket) do
+    {:noreply, assign(socket, clicked_players: clicked_players)}
+  end
+
+
+
+
+
+  @impl true
+  def handle_event(%{event: "redirect_to_count_vote_wolf"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
      push_redirect(socket,
-       to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}"
+       to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}"
      )}
   end
 

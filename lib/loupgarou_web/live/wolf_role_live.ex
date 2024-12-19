@@ -82,11 +82,13 @@ defmodule LoupgarouWeb.WolfRoleLive do
       LoupgarouWeb.Endpoint.broadcast!(
         "game:#{socket.assigns.code}",
         "redirect_to_night",
-        %{url: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}"}
+        #%{url: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}"}
+        %{url: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live"}
       )
 
       # Redirect the current player to the night phase
-      {:noreply, push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+      #{:noreply, push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+      {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live")}
     else
       # Not all players are ready, just update the count
       {:noreply, socket}
@@ -99,8 +101,8 @@ defmodule LoupgarouWeb.WolfRoleLive do
     {:noreply, assign(socket, clicked_players: clicked_players)}
   end
 
-  def handle_info(%{event: "redirect_to_night", payload: %{url: url}}, socket) do
+  def handle_info(%{event: "redirect_to_night", payload: _}, socket) do
     # Redirect all players to the night phase
-    {:noreply, push_redirect(socket, to: url)}
+    {:noreply, push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/wolf_night_live")}
   end
 end

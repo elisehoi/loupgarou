@@ -33,7 +33,7 @@ defmodule LoupgarouWeb.Router do
     live "/:code/:name/villager_role_live", VillagerRoleLive
     live "/:code/:name/wolf_role_live", WolfRoleLive
     live "/:code/:name/wolf_night_live", WolfNightLive
-    get "/count_vote/:code/:name/:victim", PageController, :count_vote
+    get "/count_vote/:code/:name", PageController, :count_vote
     live "/:code/:name/:victim/morning_live", Morning2Live
     live "/:code/:name/day_vote_live", DayVoteLive
     get "/count_vote_day/:code/:name/:suspect", PageController, :count_vote_day

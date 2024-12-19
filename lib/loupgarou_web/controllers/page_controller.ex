@@ -110,8 +110,6 @@ end
         end
       end
     end)
-
-    Phoenix.PubSub.broadcast(LoupgarouWeb.PubSub, "game:#{code}", {:role_distributed})
     redirect(conn, to: "/show_role/" <> code <> "/" <> name)
   end
 
@@ -131,15 +129,9 @@ end
     role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
     if(role== :Werewolf) do
       playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
-<<<<<<< HEAD
-
       for {playerName, _pid} <- playerMap,
         Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
 
-=======
-      for {playerName, _pid} <- playerMap,
-        Loupgarou.GameLogic.GameProcess.getRole(playerName, code) != :Werewolf, do: playerName
->>>>>>> 9b609694e21e323cc46329ddd17d06a0acac8a7a
         redirect(conn, to: "/#{code}/#{name}/wolf_night_live")
     else
       redirect(conn, to: "/#{code}/#{name}/night_live")
@@ -147,18 +139,18 @@ end
   end
 
 
-  def count_vote(conn, %{"code" => code, "name" => name, "victim" => victim}) do
-    IO.inspect("#{name} Voted for: #{victim} in game: #{code}")
-    Loupgarou.GameLogic.GameProcess.add_vote(victim, code)
+  def count_vote(conn, %{"code" => code, "name" => name}) do
+    IO.inspect("#{name} Voted in game: #{code}")
     statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
-    if(statusDB.expectedVoteWolf== 0) do
-      {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
-      Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
-      Loupgarou.GameLogic.GameProcess.resetVote(code)
-      redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
+    {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
+    Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
+    Loupgarou.GameLogic.GameProcess.resetVote(code)
+    
+    redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
 
       #render(conn, "dead.html", dead: playerName, code: code, name: name)
-    end
+
+
   end
 
   def count_vote_day(conn, %{"code" => code, "name" => name, "suspect" => suspect}) do
