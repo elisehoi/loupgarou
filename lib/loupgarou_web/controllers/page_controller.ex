@@ -8,7 +8,6 @@ defmodule LoupgarouWeb.PageController do
   end
 
 
-## Author Elise - Nov 29 11:48 AM
 # generate access code for the game and url of the room
   defp generate_access_code do
     :crypto.strong_rand_bytes(4)
@@ -18,9 +17,7 @@ defmodule LoupgarouWeb.PageController do
 
 # create game room using the access code, redirect to a new page with the access code as URL
   def create_game_room(conn, %{"name" => name}) do
-
     code = generate_access_code()
-
   case Loupgarou.GameLogic.GameProcess.start(name, code) do
     {:ok, _pid} ->
       redirect(conn, to: "/#{code}/#{name}/waiting_room_master_live")
@@ -34,18 +31,19 @@ defmodule LoupgarouWeb.PageController do
 end
 
 
-# check if game room exists to join one
+# check if game room exists (used to join one)
 defp game_room_exists?(code) do
   case Process.whereis(String.to_atom(code)) do
     nil -> false  # No process found, game room does not exist
     _pid -> true   # Process found, game room exists
   end
 end
+
+#check the players name thorught the map
 def check_player_name(conn, %{"code" => code, "name" => name}) do
   # Check if the game room exists
   if game_room_exists?(code) do
     player_map = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
-
     if Map.has_key?(player_map, name) do
       json(conn, %{exists: true, message: "Name already exists"})
     else
@@ -56,6 +54,7 @@ def check_player_name(conn, %{"code" => code, "name" => name}) do
   end
 end
 
+#join room
 def join_game_room(conn, %{"code" => code, "name" => name}) do
   # Check if the game room exists
   if game_room_exists?(code) do
@@ -69,30 +68,24 @@ def join_game_room(conn, %{"code" => code, "name" => name}) do
 end
 
 
-  #TODO: Consider to create setRole, ... function in the GameProcess for consistency. Or maybe remove getRole, by sending the message directly to the playerProcess and add a reveice block here.
+  #role distribution and set of the percentage of wolves in the game
   def distribute_role(conn, %{"code" => code, "name" => name}) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
-    IO.inspect(playerMap)
     nbOfPlayers = map_size(playerMap)
     # ration between villlagers and werewolf = 1 to 3. => 1 Wolf = 3 Villagers
     nbOfWolf = round(nbOfPlayers/3)
-    IO.inspect("There would be #{nbOfWolf} Wolfs in this Game")
-    IO.inspect("the amount of player is is:#{nbOfPlayers}")
 
-    # For the number of wolf it looks for a random player of the playerList and set its role to Wolf.
-
-    available_players = Map.keys(playerMap)
+    # Assignation of the roles,  random player of the playerList and set its role to Wolf.
+     available_players = Map.keys(playerMap)
 
     Enum.reduce(1..nbOfWolf, available_players, fn _i, available_players ->
       player_name = Enum.random(available_players)
 
       case Loupgarou.GameLogic.GameProcess.setRole(player_name, code, :Werewolf) do
         :error ->
-          IO.inspect("There's a problem with setting role to Wolf for #{player_name}")
           available_players # Return the unchanged list if there's an error
 
         :ok ->
-          IO.inspect("#{player_name} is now a Werewolf")
           new_available_players = List.delete(available_players, player_name)
           new_available_players # Return the updated list without this player
       end
@@ -113,17 +106,17 @@ end
     redirect(conn, to: "/show_role/" <> code <> "/" <> name)
   end
 
+  #once the distribution of the role is done, the players are redirected to the corresponding view
   def show_role(conn, %{"code" => code, "name" => name}) do
     role = Loupgarou.GameLogic.GameProcess.getRole(name, code)
     if(role == :Werewolf) do
       redirect(conn, to: "/#{code}/#{name}/wolf_role_live")
-      #render(conn, "wolf_role.html", code: code, name: name)
     else
       redirect(conn, to: "/#{code}/#{name}/villager_role_live")
-      #render(conn, "villager_role.html", code: code, name: name)
     end
   end
 
+  #different night time setting according to the role
   def night_time(conn, %{"code" => code, "name" => name}) do
     Loupgarou.GameLogic.GameProcess.resetVote(code)
     role=Loupgarou.GameLogic.GameProcess.getRole(name, code)
@@ -138,7 +131,7 @@ end
   end
 
 
-
+  #take the votes of the werewolves, kills the voted player and checks whether the game is finished
   def count_vote(conn, %{"code" => code, "name" => name}) do
     IO.inspect("#{name} Voted in game: #{code}")
 
@@ -156,6 +149,7 @@ end
     redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
   end
 
+  #does the same as for the werewolves voting system, but with all the players able to vote
   def count_vote_day(conn, %{"code" => code, "name" => name}) do
     IO.inspect("#{name} has voted who he think is a wolf")
     statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
@@ -169,6 +163,7 @@ end
   end
 
 
+  #end the games when either there are 0 wolves or 0 villagers after wolves action
   defp checkGameEndNight( code) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbplayers = Kernel.map_size(playerMap)
@@ -184,6 +179,7 @@ end
     end
   end
 
+  #end the games when either there are 0 wolves or 0 villagers after the village vote
   defp checkGameEndDay(code) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbplayers = Kernel.map_size(playerMap)
