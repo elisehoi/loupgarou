@@ -24,13 +24,18 @@
 - make sure all players are redirected to the game when it starts
 - convert html pages of latest Yingying push to live view
 - Make the voting system in live view
+- brodcast when a player is getting ready to enter a new page
 
 
 
 ## Todo
-- brodcast when a player is getting ready to enter a new page
+- make the game Pretty
+    - change bgs 
+        - home html.heex
+    - change positionning of text
+    - change text
 
 - find why on earth it says game room does not exist
-- make the game Pretty
+
 - disallow players for usign the same name
     - tried to do it but not working, not top priority

@@ -145,7 +145,7 @@ end
     {playerName, _value} = Enum.max_by(statusDB.votes, fn {_key, value} -> value end)
     Loupgarou.GameLogic.GameProcess.killPlayer(playerName, code)
     Loupgarou.GameLogic.GameProcess.resetVote(code)
-    
+
     redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
 
       #render(conn, "dead.html", dead: playerName, code: code, name: name)

@@ -24,7 +24,53 @@ defmodule LoupgarouWeb.WolfRoleLive do
   @impl true
   def render(assigns) do
     ~H"""
+        <style>
+      /* Background and container styling */
+      .role-container {
+        background-image: url('https://www.wallart.com/media/catalog/product/cache/871f459736130e239a3f5e6472128962/w/0/w05318-small.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      /* White transparent background box for content */
+      .content-box {
+        background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 800px;
+        width: 100%;
+        text-align: center;
+      }
+
+      /* Text styling */
+      h1, h2, p {
+        color: #333; /* Dark text for better readability */
+      }
+
+      /* Button styling */
+      .clickable-button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50; /* Button color */
+        color: white;
+      }
+
+      .clickable-button:hover {
+        background-color: #45a049;
+      }
+    </style>
+
     <div class="role-container">
+      <div class="content-box">
       <h1>Your role is...</h1>
       <img
         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTck_Fl6l-F-2X5l5aHNtgz3nXVt-La9cicXA&s"
@@ -34,7 +80,7 @@ defmodule LoupgarouWeb.WolfRoleLive do
       <p>
         The werewolf is the game’s villain and main antagonist. The werewolf’s
         only job is to stalk the villagers at night and kill them without getting
-        caught. This role bla bla bla...
+        caught. This role can win by eliminating all the villagers (how lovely?!)
       </p>
 
       <!-- Button -->
@@ -49,6 +95,7 @@ defmodule LoupgarouWeb.WolfRoleLive do
       </button>
 
       <p>Players Ready: <%= @clicked_players %> / <%= @total_players %></p>
+    </div>
     </div>
     """
   end
