@@ -1,4 +1,6 @@
 defmodule LoupgarouWeb.Router do
+  alias LoupgarouWeb.WolfWon
+  alias LoupgarouWeb.VillageWon
   use LoupgarouWeb, :router
 
 
