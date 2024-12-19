@@ -70,7 +70,7 @@ defmodule LoupgarouWeb.VillagerRoleLive do
         background-color: #45a049;
       }
     </style>
-    <div class="role-container">$
+    <div class="role-container">
       <div class="content-box">
       <h1>Your role is...</h1>
       <img
@@ -79,8 +79,7 @@ defmodule LoupgarouWeb.VillagerRoleLive do
       />
       <h2>A Villager</h2>
       <p>
-        The most commonplace role, a simple Villager, spends the game trying to
-        root out who they believe the werewolves are.
+        The most commonplace role, a simple Villager. You will spend your time trying to figure out who the Werewolves are, as you are awake during the day. You can do so by discussing with other players, and then vote for who to eliminate. Beware, when you sleep at night, the wolves might want to kill you... but if the villagers manage to eliminate all the Werewolves, they win!
       </p>
 
       <!-- Ready Button -->
@@ -133,7 +132,7 @@ defmodule LoupgarouWeb.VillagerRoleLive do
       )
 
       # Redirect the current player to the night phase
-      {:noreply, push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+      {:noreply, push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
     else
       # Not all players are ready, just update the count
       {:noreply, socket}
@@ -146,9 +145,9 @@ defmodule LoupgarouWeb.VillagerRoleLive do
     {:noreply, assign(socket, clicked_players: clicked_players)}
   end
 
-  @impl true 
+  @impl true
   def handle_info(%{event: "redirect_to_night", payload: _}, socket) do
     # Redirect all players to the night phase
-    {:noreply, push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+    {:noreply, push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
   end
 end

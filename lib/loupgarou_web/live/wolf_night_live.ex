@@ -135,7 +135,7 @@ defmodule LoupgarouWeb.WolfNightLive do
 
       # Redirect the current player to the night phase
 
-      {:noreply, push_redirect(socket, to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}")}
+      {:noreply, push_navigate(socket, to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}")}
     else
       # Not all players are ready, just update the count
       {:noreply, socket}
@@ -155,7 +155,7 @@ defmodule LoupgarouWeb.WolfNightLive do
   def handle_event(%{event: "redirect_to_count_vote_wolf"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
-     push_redirect(socket,
+     push_navigate(socket,
        to: "/count_vote/#{socket.assigns.code}/#{socket.assigns.name}"
      )}
   end

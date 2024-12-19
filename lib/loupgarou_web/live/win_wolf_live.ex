@@ -11,7 +11,7 @@ defmodule LoupgarouWeb.WinWolfLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <h1> The wolfs won</h1>
+    <h1> All villagers are dead, the wolves have won !</h1>
     """
   end
 

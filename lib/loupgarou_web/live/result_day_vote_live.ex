@@ -80,14 +80,14 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
                 "game:#{socket.assigns.code}",
                 "redirect_to_EndWolf",
                 %{})
-              {:noreply, push_redirect(socket, to: "/win_wolf_live")}
+              {:noreply, push_navigate(socket, to: "/win_wolf_live")}
 
               :EndVillager ->
               LoupgarouWeb.Endpoint.broadcast!(
                 "game:#{socket.assigns.code}",
                 "redirect_to_EndVillager",
                 %{})
-                {:noreply, push_redirect(socket, to: "/win_villager_live")}
+                {:noreply, push_navigate(socket, to: "/win_villager_live")}
 
               _ ->
                 LoupgarouWeb.Endpoint.broadcast!(
@@ -95,7 +95,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
                   "redirect_to_continue",
                   %{})
                 {:noreply,
-                 push_redirect(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
+                 push_navigate(socket, to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}")}
             end
       else
         # Not all players are ready, just update the count
@@ -113,7 +113,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   def handle_event(%{event: "redirect_to_EndWolf"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
-     push_redirect(socket,
+     push_navigate(socket,
        to: "/win_wolf_live"
      )}
   end
@@ -122,7 +122,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   def handle_event(%{event: "redirect_to_EndVillager"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
-     push_redirect(socket,
+     push_navigate(socket,
        to: "/win_villager_live"
      )}
   end
@@ -131,7 +131,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   def handle_event(%{event: "redirect_to_continue"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
-     push_redirect(socket,
+     push_navigate(socket,
        to: "/night_time/#{socket.assigns.code}/#{socket.assigns.name}"
      )}
   end

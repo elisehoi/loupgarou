@@ -47,10 +47,10 @@ defmodule LoupgarouWeb.NightLive do
 
     <div class="night-live">
       <div class="content-box">
-        <h2>Sleeping....<%= @name %></h2>
+        <h2>Sleep well, <%= @name %>...</h2>
         <h2>
           The day is over, it's time to rest. Enjoy your sleep. Who knows...
-          it may be your last one.
+          it may be the last time you do.
         </h2>
       </div>
     </div>
@@ -63,10 +63,10 @@ defmodule LoupgarouWeb.NightLive do
     IO.inspect("Received wake_up event with victim: #{victim}")
     db = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
     cond do
-      db.phase == :EndWolf -> push_redirect(socket, to: "/win_wolf_live")
-      db.phase == :EndVillager -> push_redirect(socket, to: "/win_villager_live")
+      db.phase == :EndWolf -> push_navigate(socket, to: "/win_wolf_live")
+      db.phase == :EndVillager -> push_navigate(socket, to: "/win_villager_live")
       true -> {:noreply,
-      push_redirect(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live")}
+      push_navigate(socket, to: "/#{socket.assigns.code}/#{socket.assigns.name}/#{victim}/morning_live")}
     end
   end
 
