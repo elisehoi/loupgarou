@@ -18,16 +18,18 @@ defmodule LoupgarouWeb.PageController do
 # create game room using the access code, redirect to a new page with the access code as URL
   def create_game_room(conn, %{"name" => name}) do
     code = generate_access_code()
-  case Loupgarou.GameLogic.GameProcess.start(name, code) do
-    {:ok, _pid} ->
-      redirect(conn, to: "/#{code}/#{name}/waiting_room_master_live")
+    case Loupgarou.GameLogic.GameProcess.start(name, code) do
+      {:ok, _pid} ->
+        conn
+        # Redirect to a new page with the access code and player name in the URL
+          |> redirect(to: "/#{code}/#{name}/waiting_room_master_live")
+      {:error, reason} ->
+        IO.inspect("Page Controller: create_game_room fails to create gameProcess")
+        conn
+        |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
+        |> redirect(to: "/")
 
-    {:error, reason} ->
-      conn
-      |> put_flash(:error, "Failed to create game: #{inspect(reason)}")
-      |> redirect(to: "/")
-      IO.inspect("Page Controller: create_game_room fails to create gameProcess")
-  end
+    end
 end
 
 

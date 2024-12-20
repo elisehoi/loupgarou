@@ -4,6 +4,7 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
   def start(playerName, gameCode) do
     # The gameCode is assigned as the name for the gameProcess. This GameProcess can then be called via this gameCode
+    #GenServer.start_link(__MODULE__, {playerName, gameCode}, name: String.to_atom(gameCode))
     GenServer.start_link(__MODULE__, {playerName, gameCode}, name: String.to_atom(gameCode))
   end
 
