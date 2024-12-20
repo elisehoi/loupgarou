@@ -8,14 +8,18 @@ defmodule LoupgarouWeb.PageController do
   end
 
 
-# generate access code for the game and url of the room
+@doc """
+generate access code for the game and url of the room
+"""
   defp generate_access_code do
     :crypto.strong_rand_bytes(4)
     |> Base.encode16()
     |> binary_part(0, 5)
   end
 
-# create game room using the access code, redirect to a new page with the access code as URL
+  @doc """
+  create game room using the access code, redirect to a new page with the access code as URL
+  """
   def create_game_room(conn, %{"name" => name}) do
     code = generate_access_code()
     case Loupgarou.GameLogic.GameProcess.start(name, code) do
@@ -33,17 +37,19 @@ defmodule LoupgarouWeb.PageController do
 end
 
 
-# check if game room exists (used to join one)
+@doc """
+check if game room exists (used to join one)
+"""
 defp game_room_exists?(code) do
   case Process.whereis(String.to_atom(code)) do
-    nil -> false  # No process found, game room does not exist
-    _pid -> true   # Process found, game room exists
+    nil -> false  # no process found, game room does not exist
+    _pid -> true   # process found, game room exists
   end
 end
 
 #check the players name thorught the map
 def check_player_name(conn, %{"code" => code, "name" => name}) do
-  # Check if the game room exists
+  # check if the game room exists
   if game_room_exists?(code) do
     player_map = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     if Map.has_key?(player_map, name) do
@@ -58,7 +64,7 @@ end
 
 #join room
 def join_game_room(conn, %{"code" => code, "name" => name}) do
-  # Check if the game room exists
+  # check if the game room exists
   if game_room_exists?(code) do
     Loupgarou.GameLogic.GameProcess.add_player(name, code)
     redirect(conn, to: "/#{code}/#{name}/waiting_room_player_live")
@@ -70,7 +76,9 @@ def join_game_room(conn, %{"code" => code, "name" => name}) do
 end
 
 
-  #role distribution and set of the percentage of wolves in the game
+  @doc """
+  role distribution at the beginning of the game and set of the percentage of wolves in the game
+  """
   def distribute_role(conn, %{"code" => code, "name" => name}) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbOfPlayers = map_size(playerMap)
@@ -133,7 +141,9 @@ end
   end
 
 
-  #take the votes of the werewolves, kills the voted player and checks whether the game is finished
+  @doc """
+  take the votes of the werewolves, kills the voted player and checks whether the game is finished
+  """
   def count_vote(conn, %{"code" => code, "name" => name}) do
     IO.inspect("#{name} Voted in game: #{code}")
 
@@ -151,7 +161,9 @@ end
     redirect(conn, to: "/#{code}/#{name}/#{playerName}/morning_live")
   end
 
-  #does the same as for the werewolves voting system, but with all the players able to vote
+  @doc """
+  does the same as for the werewolves voting system, but with all the players able to vote
+  """
   def count_vote_day(conn, %{"code" => code, "name" => name}) do
     IO.inspect("#{name} has voted who he think is a wolf")
     statusDB = Loupgarou.GameLogic.GameProcess.getstatusDatabase(code)
@@ -164,8 +176,9 @@ end
     redirect(conn, to: "/#{code}/#{name}/#{playerName}/#{role}/result_day_vote_live")
   end
 
-
-  #end the games when either there are 0 wolves or 0 villagers after wolves action
+  @doc """
+  end the games when either there are 0 wolves or 0 villagers after wolves action
+  """
   defp checkGameEndNight( code) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbplayers = Kernel.map_size(playerMap)
@@ -181,7 +194,9 @@ end
     end
   end
 
-  #end the games when either there are 0 wolves or 0 villagers after the village vote
+  @doc """
+  end the games when either there are 0 wolves or 0 villagers after the village vote
+  """
   defp checkGameEndDay(code) do
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     nbplayers = Kernel.map_size(playerMap)

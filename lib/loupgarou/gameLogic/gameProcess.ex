@@ -11,7 +11,6 @@ defmodule Loupgarou.GameLogic.GameProcess do
   #cast used to send synchronous request. The problem could be that some feature aren't instantiated yet before used...
   #call used to send asynchrounous request, meaning the caller cannot do anything until it receives a reply from this method
   def add_player(playerName, code) do
-    # Maybe use call? It won't be synchrounous, but avoid the problem not all players are added before the game starts??
     # The first parameter is the name assigned to each GameProcess (unique).
     # The second parameter is the message send to the corresponding GameProcess
     GenServer.cast(String.to_atom(code), {:addPlayer, playerName})
@@ -27,26 +26,44 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:getstatusDatabase})
   end
 
+  @doc """
+    returns the pid of the porcess associated to the player name
+  """
   def getPlayerPID(playerName, code) do
     GenServer.call(String.to_atom(code), {:getPlayerPID, playerName})
   end
 
+    @doc """
+    returns list of all players with their pid
+    """
   def getPlayerMap(code) do
     GenServer.call(String.to_atom(code), {:getPlayerMap})
   end
 
+    @doc """
+    returns the number of players in the game
+  """
   def getPlayerCount(code) do
     map_size(getPlayerMap(code))
-  end
+   end
 
+    @doc """
+    gives role (wolf/villager) to the player
+  """
   def setRole(playerName, code, newRole) do
     GenServer.call(String.to_atom(code), {:setRole, playerName, newRole})
   end
 
+   @doc """
+    returns role (wolf/villager) of the player
+  """
   def getRole(playerName, code) do
     GenServer.call(String.to_atom(code), {:getRole, playerName})
   end
 
+   @doc """
+    resets the vote count whenever a vote is finished to start a new voting round
+  """
   def resetVote(code) do
     GenServer.call(String.to_atom(code), {:resetVote})
   end
@@ -55,18 +72,28 @@ defmodule Loupgarou.GameLogic.GameProcess do
     GenServer.call(String.to_atom(code), {:killPlayer, playerName})
   end
 
-  # Increment the click count on buttons that require all players to click on
+  @doc """
+  Increment the click count on buttons that require all players to click on
+  """
   def increment_clicked_players(code) do
     GenServer.cast(String.to_atom(code), {:incrementClickedPlayers})
   end
 
+   @doc """
+    resets the click count
+  """
   def reset_clicked_players(code) do
     GenServer.cast(String.to_atom(code), {:resetClickedPlayers})
   end
+     @doc """
+    get number of players who clicked the ready button
+  """
   def get_clicked_players(code) do
     GenServer.call(String.to_atom(code), {:getClickedPlayers}, 15_000)
   end
-
+     @doc """
+    set phase (night/day...)
+  """
   def setPhase(code, phase) do
     GenServer.call(String.to_atom(code), {:setPhase, phase})
   end
@@ -78,7 +105,11 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
 
   # loop: same as while go on robot loop but for the player processes (handles messages)
-  # statusDatabase : small database (map) with player names and player pids + the phase of the game (waiting room, night or day)
+  # statusDatabase : small database (map) with player names and player pids + the phase of the game (waiting room, night or day), and other variables useful for the game
+       @doc """
+    spawns a pid for the game process
+    creates the status database where all the information relevant to the game progress is stored
+  """
   @impl true
   def init({playerName, game_code}) do
     pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [playerName, :unknown, :alive])
@@ -96,14 +127,14 @@ defmodule Loupgarou.GameLogic.GameProcess do
 
       {:ok, initial_statusDatabase}
   end
-
-  # broadcast functions to the live views (of the player list)
+     @doc """
+broadcast functions to the live views (of the player list)
+"""
   defp broadcast(game_code, message) do
     Phoenix.PubSub.broadcast(LoupgarouWeb.PubSub, "game:#{game_code}", message)
   end
 
 
-# just does stuff with no reply
 @impl true
 def handle_cast({:addPlayer, newPlayer}, statusDatabase) do
   pid = spawn(Loupgarou.GameLogic.PlayerProcess, :loop, [newPlayer, :unknown, :alive])
@@ -256,12 +287,12 @@ end
 
 
 
-  # To count alive wolves
+  # to count alive wolves
   def getWolvesCount(game_code) do
     GenServer.call(String.to_atom(game_code), {:countAlivePlayersByRole, :Werewolf})
   end
 
-# To count alive villagers
+# to count alive villagers
 def getVillagersCount(game_code)do
 GenServer.call(String.to_atom(game_code), {:countAlivePlayersByRole, :Villager})
 end

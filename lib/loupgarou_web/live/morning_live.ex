@@ -3,12 +3,10 @@ defmodule LoupgarouWeb.Morning2Live do
 
   @impl true
   def mount(params, _session, socket) do
-    # Extract `:name` from the parameters passed in the URL
     name = params["name"] || "Nameless player"
     code = params["code"]
     victim = params["victim"]
 
-    # Assign values to the socket
     {:ok, assign(socket, name: name, code: code, victim: victim)}
   end
 
@@ -20,6 +18,8 @@ defmodule LoupgarouWeb.Morning2Live do
     <img src="https://t3.ftcdn.net/jpg/01/76/52/20/360_F_176522043_NBVB7bJTHStrqG3ONiM7QpExAz2mDAUR.jpg" alt="Victim Image" width="300" height="200">
     <p> <%= @victim || "No victim today" %> </p>
     <p>This person is dead, killed by a Werewolf.</p>
+    <p>Your job is now to try to find out who the wereloves are by discussing with the other players.</p>
+    <p>Choose a member to kill and they will be eliminated, with their role revealed.</p>
     <button class="clickable-button"
             type="button"
             phx-click="redirect_to_vote_day">Proceed to Voting</button>

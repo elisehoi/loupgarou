@@ -10,7 +10,7 @@ defmodule LoupgarouWeb.WinVillagerLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <h1> The villager won</h1>
+    <h1> The remaining villager won !</h1>
     """
   end
 

@@ -3,7 +3,6 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
 
   @impl true
   def mount(params, _session, socket) do
-    # Extract `:name` from the parameters passed in the URL
     name = params["name"] || "Nameless player"
     code = params["code"]
     dead = params["dead"]
@@ -12,18 +11,14 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
 
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(code)
-    nb_players = Loupgarou.GameLogic.GameProcess.getPlayerCount(code)
 
 
-
-    # Assign values to the socket
     {:ok, assign(socket, name: name,
                          code: code,
                          dead: dead,
                          role: role,
                          playerMap: playerMap,
                          clicked: false,
-                         nb_players: nb_players,
                          clicked_players: clicked_players)}
   end
 
