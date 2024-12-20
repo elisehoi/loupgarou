@@ -16,3 +16,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 ## Important note!
 
 If the game process / genserver crahses, please restart the game from the beginning. It should normally work again
+
+## Demo video link:
+
+https://drive.switch.ch/index.php/s/cvNptO2AkSOuJCI
