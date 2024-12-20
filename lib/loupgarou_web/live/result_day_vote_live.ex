@@ -11,12 +11,13 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
 
     playerMap = Loupgarou.GameLogic.GameProcess.getPlayerMap(code)
     clicked_players = Loupgarou.GameLogic.GameProcess.get_clicked_players(code)
-
+    nb_players = Loupgarou.GameLogic.GameProcess.getPlayerCount(code)
 
     {:ok, assign(socket, name: name,
                          code: code,
                          dead: dead,
                          role: role,
+                         nb_players: nb_players,
                          playerMap: playerMap,
                          clicked: false,
                          clicked_players: clicked_players)}
@@ -105,7 +106,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   end
 
   @impl true
-  def handle_event(%{event: "redirect_to_EndWolf"}, socket) do
+  def handle_info(%{event: "redirect_to_EndWolf"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
      push_navigate(socket,
@@ -114,7 +115,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   end
 
   @impl true
-  def handle_event(%{event: "redirect_to_EndVillager"}, socket) do
+  def handle_info(%{event: "redirect_to_EndVillager"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
      push_navigate(socket,
@@ -123,7 +124,7 @@ defmodule LoupgarouWeb.ResultDayVoteLive do
   end
 
   @impl true
-  def handle_event(%{event: "redirect_to_continue"}, socket) do
+  def handle_info(%{event: "redirect_to_continue"}, socket) do
     # Redirect to the vote counting route
     {:noreply,
      push_navigate(socket,
